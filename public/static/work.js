@@ -9,7 +9,7 @@
     institution: [['overview', '总览', 'fa-gauge'], ['grants', '资料申请', 'fa-key'], ['deals', '洽谈与合同', 'fa-file-signature'], ['demands', '需求单', 'fa-bullhorn']],
     distributor: [['overview', '发行实例', 'fa-satellite-dish'], ['statements', '报表对账', 'fa-file-invoice-dollar'], ['settlements', '分账结算', 'fa-coins'], ['deals', '合同锁权', 'fa-lock']],
     finance: [['overview', '报表对账', 'fa-file-invoice-dollar'], ['settlements', '分账审批', 'fa-coins'], ['audit', '审计日志', 'fa-scroll']],
-    operator: [['overview', '运营总览', 'fa-gauge'], ['lightyear', '光年算力审批', 'fa-meteor'], ['entries', '报名与分派', 'fa-users-viewfinder'], ['awards', '颁奖与荣誉', 'fa-award'], ['listings', '挂牌审核', 'fa-tag'], ['tickets', '工单队列', 'fa-ticket'], ['audit', '审计与事件', 'fa-scroll']],
+    operator: [['overview', '运营总览', 'fa-gauge'], ['lightyear', '算力额度审批', 'fa-microchip'], ['entries', '报名与分派', 'fa-users-viewfinder'], ['awards', '颁奖与荣誉', 'fa-award'], ['listings', '挂牌审核', 'fa-tag'], ['tickets', '工单队列', 'fa-ticket'], ['audit', '审计与事件', 'fa-scroll']],
   }
   const TITLES = { creator: '创作者工作台', expert: '专家工作台', institution: '机构工作台', distributor: '发行运营工作台', finance: '财务工作台', operator: '联合运营管理台', admin: '联合运营管理台' }
 
@@ -22,7 +22,7 @@
     app.innerHTML = `<div class="wrap"><div class="wb">
       <aside class="wb-side"><div class="card"><div class="wb-profile" style="padding:6px 8px 12px;border-bottom:1px solid var(--line);margin-bottom:8px"><div class="row"><span class="avatar">${esc(S.user.name[0])}</span><div><b class="small">${esc(S.user.name)}</b><div class="xs gold">${esc(S.user.role_label || '')}</div></div></div><div class="xs dim" style="margin-top:6px">${esc(S.user.org || '')}</div></div>
         <nav class="wb-menu"><div class="grp">${TITLES[S.user.role]}</div>${menu.map(([k, l, i]) => `<a href="#/workbench/${k}" class="${sec === k ? 'active' : ''}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')}
-        <div class="grp">工具</div><a href="#/lightyear/wallet"><i class="fa-solid fa-meteor"></i>光年算力</a><a href="#/estimator"><i class="fa-solid fa-calculator"></i>算力估算</a><a href="#/verify"><i class="fa-solid fa-certificate"></i>证书验真</a></nav></div></aside>
+        <div class="grp">工具</div><a href="#/lightyear/wallet"><i class="fa-solid fa-microchip"></i>算力账户</a><a href="#/estimator"><i class="fa-solid fa-calculator"></i>算力估算</a><a href="#/verify"><i class="fa-solid fa-certificate"></i>证书验真</a></nav></div></aside>
       <section id="wb-main" style="min-width:0"></section></div></div>`
     const main = $('#wb-main')
     const fn = (V[role] && V[role][sec]) || (V[role] && V[role].overview)
@@ -42,7 +42,7 @@
       const pending = d.grants.filter((g) => g.status === '待批准').length
       m.innerHTML = head('欢迎回来，' + esc(S.user.name), '作品与项目、报名、挂牌、授权待办、资源及交付', `<button class="btn btn-gold btn-sm" id="new-asset"><i class="fa-solid fa-plus"></i>创建作品档案</button>`) +
         kpis([[d.assets.length, '作品档案', 'fa-film'], [d.entries.length, '盛典报名', 'fa-trophy'], [d.listings.length, '影市挂牌', 'fa-tag'], [pending, '待处理授权', 'fa-key']]) +
-        `<a class="card hover ly-wb-card" href="#/lightyear/wallet" style="display:flex;align-items:center;gap:14px;margin-bottom:16px;border-color:rgba(212,169,79,.45);background:radial-gradient(400px 120px at 100% 0,rgba(240,207,134,.16),transparent 70%),var(--panel)"><i class="fa-solid fa-meteor gold" style="font-size:26px"></i><div style="flex:1"><b>光年算力钱包</b><div class="xs muted">5000万元 Seedance 2.0/2.5 影视算力免费共享 · 完成星火任务即可领取</div></div><span class="btn btn-sm btn-gold">进入</span></a>` +
+        `<a class="card hover" href="#/lightyear/wallet" style="display:flex;align-items:center;gap:16px;margin-bottom:16px;border-left:2px solid var(--gold)"><div style="flex:1;min-width:0"><div class="pg-label">光年计划</div><b>算力账户</b><div class="xs muted">Seedance 2.0 / 2.5 生成算力 · 完成基础任务即可领取</div></div><span class="btn btn-sm">进入</span></a>` +
         (d.assets.length ? '' : `<div class="card" style="margin-bottom:16px"><b>开始你的第一个项目</b><div class="row" style="margin-top:12px"><button class="btn btn-gold btn-sm" id="new-asset2">创建项目</button><a class="btn btn-sm" href="#/incubate">查看提报样例</a><a class="btn btn-sm" href="#/estimator">先估算预算</a></div></div>`) +
         `<div class="cards c2"><div class="card"><div class="between"><b>报名进度</b><a class="xs gold" href="#/workbench/entries">全部</a></div>${d.entries.slice(0, 4).map((e) => `<div class="between small" style="padding:10px 0;border-bottom:1px solid var(--line)"><div><b>《${esc(e.title)}》</b><div class="xs dim">${esc(e.edition)} · ${esc(e.track)} · ${esc(e.receipt_no)}</div></div>${statusTag(e.status)}</div>`).join('') || '<p class="xs muted" style="margin-top:10px">暂无报名</p>'}</div>
         <div class="card"><div class="between"><b>评审反馈</b><span class="xs dim">仅显示可反馈意见</span></div>${d.feedback.map((f) => `<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="between small"><b>《${esc(f.title)}》</b><span class="mono gold">${f.total}分</span></div><p class="xs muted">${esc(f.comment_feedback || '—')}</p></div>`).join('') || '<p class="xs muted" style="margin-top:10px">暂无已提交的评审反馈</p>'}</div></div>`
