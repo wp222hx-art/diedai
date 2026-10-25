@@ -1,21 +1,58 @@
-```txt
-npm install
-npm run dev
+# 迭代影交汇 · Iteration Film Hub
+> 迭代盛典 × 捷成世纪｜AIGC 影视创作、盛典、交易与全渠道发行协作平台（工作名）
+
+依据《内容平台战略与产品落地全案 V1.1》与《平台命名与功能模块技术策划案 V1.1》搭建的**可运行 P0 平台**：一套作品档案 · 四条业务线 · 五类工作台 · 22 个功能模块的核心闭环。
+
+## 已完成功能
+| 业务线 | 已实现 |
+|---|---|
+| 身份 M01 | 注册/登录（PBKDF2 + Session Token）、7 类角色、服务端权限校验 |
+| 作品档案 M02 | 建档（字段校验）、版本快照与提交锁定、团队隔离（AT01） |
+| 迭代盛典 M03–M05 | 届次/赛道/奖项配置；完成作品组与提案组差异化校验（30—60 秒概念片×2、篇幅≥30 分钟）；分项展映授权；回执；利益冲突申报→回避→重派工单；盲审打分（每维 1—5 分＋理由，综合分=Σ(分÷5×权重)）；提交锁定；分差≥20 自动生成第三评；提名→第二人批准→发布→电子证书；撤销→证书即时失效＋交易复核工单；公开验真页 |
+| 迭代影创 M06–M07 | 试制/孵化/联合开发包；M0–M4 里程碑；算力账本；**算力预算生成器**（G=N×k÷q×(1+r)，三场景，演示值 1886/4050/11110 元）；供应商回调幂等核销（AT12） |
+| 迭代影市 M08–M10 | 四类挂牌；公开授权单独勾选；权利矩阵；父子地区/媒介/语言冲突检测；NDA＋分级资料室逐机构批准/撤权；意向不锁权；**签约生效原子锁权**（INSERT…WHERE NOT EXISTS，并发最多一单成功，AT08） |
+| 发行中心 M15–M21 | 14 个渠道档案（业务/技术状态独立）；发行实例状态机；权利窗口校验；候选渠道禁止送审（AT15）；上线须内容 ID＋证据（AT20）；报表导入幂等去重与更正版（AT22）；银行凭证核验实收、部分到账、禁止超配（AT13/AT23）；分账瀑布（AT24：8 万→0.8+1+4+1.32+0.88）；财务审批 |
+| 运营治理 M11/M13/M14 | 活动预约、挂牌审核（未清权不可发布）、专家分派、工单队列、审计日志、事件 Outbox |
+| 前端 | 影视风格（暗场黑＋放映金、胶片条、海报卡、证书），**移动端优先**：底部 Tab、抽屉导航、表格转卡片、底部弹出表单、安全区适配 |
+
+## 访问路径
+前端（Hash 路由）：`/#/` 首页 · `/#/festival` 盛典（赛道/流程/荣誉库/专家网络/日历）· `/#/incubate` 影创 · `/#/estimator` 算力估算 · `/#/market` 影市 · `/#/listing/:id` 挂牌详情 · `/#/distribution` 发行中心（渠道/流程/交付/模式/分账）· `/#/events` · `/#/academy` · `/#/verify/:code` 证书验真 · `/#/rules` · `/#/login` · `/#/workbench/:section` 工作台
+
+主要 API（`/api`）：
+- 公开：`GET /home /editions /honors /certificates/:code /experts /listings /listings/:id /demands /channels /events /courses /insights`
+- 身份：`POST /auth/login /auth/register /auth/logout`，`GET /auth/me`
+- 工作台：`GET /dashboard`；`POST /assets /entries /reviews/:id/accept /reviews/:id/submit /estimates /projects /provider-callbacks /listings /listings/:id/access /access-grants/:id/decide /deals /deals/:id/activate /releases /releases/:id/advance /statements/import /statements/:id/receipt /settlements /settlements/preview /settlements/:id/approve`
+- 运营：`POST /ops/assign /ops/award-results /ops/award-results/:id/(approve|publish|revoke) /ops/listings/:id/review`，`GET /ops/audit`
+- 错误码：401 未登录 · 403 无权限 · 409 状态/权利冲突 · 422 材料或参数错误
+
+## 演示账号（密码均为 `demo1234`）
+creator@demo.cn（创作者）· creator2@demo.cn · expert@demo.cn / expert2 / expert3（专家）· org@demo.cn（认证机构）· dist@demo.cn（发行运营）· ops@demo.cn / ops2@demo.cn（联合运营，双人审批）· finance@demo.cn（财务）
+
+## 数据架构
+- **存储**：Cloudflare D1（SQLite），29 张表，覆盖身份、内容资产、赛事评奖、项目制作、版权交易、发行履约、治理七个域
+- **核心实体**：users / assets / asset_versions / editions / tracks / awards / entries / review_assignments / award_results / certificates / projects / milestones / estimates / usage_ledger / listings / demands / access_grants / deals / rights_reservations / channels / releases / statements / settlements / events / tickets / audit_logs / outbox
+- **公开资料来源**：专家网络（北京国际电影节 AIGC 单元评委、北京电影学院教授等，来源：中国传媒大学新闻网、北京电影学院官网）；行业数据（捷成股份 2025 年报摘要、中国网络视听节目服务协会、财新、DataEye、中国证券报等）——均附原文链接，并标注“不代表已受邀/已合作”
+
+## 本地开发
+```bash
+npm run build
+npm run db:reset           # 迁移 + 种子数据
+pm2 start ecosystem.config.cjs
+bash tests/acceptance.sh   # 44 项验收用例（会改动数据，跑完可再 db:reset）
 ```
+种子数据由 `python3 scripts/gen_seed.py > seed.sql` 生成。
 
-```txt
-npm run deploy
-```
+## 尚未实现 / 下一步建议
+1. 私有对象存储（R2）：签名直传、病毒扫描、水印转码、短期签名链接
+2. 电子签约、支付服务、渠道 API 连接器（M22 P1）、自动技术 QC
+3. 本地化任务台（M18）与宣发投放台（M19）的完整台账
+4. 学院课程订单、肖像/声音授权申请（M12，P1）
+5. 短信/邮件通知、双因素验证、导出审批
+6. 正式部署：创建 D1 生产库并替换 `wrangler.jsonc` 中的 database_id
 
-[For generating/synchronizing types based on your Worker configuration run](https://developers.cloudflare.com/workers/wrangler/commands/#types):
+## 部署
+- **平台**：Cloudflare Pages + D1 · **技术栈**：Hono + TypeScript + 原生 JS + 自研 CSS 设计系统
+- **状态**：沙盒运行中；生产部署待选择路径（自有 Cloudflare 账户 / Genspark 托管）
+- **最后更新**：2026-10-25
 
-```txt
-npm run cf-typegen
-```
-
-Pass the `CloudflareBindings` as generics when instantiation `Hono`:
-
-```ts
-// src/index.ts
-const app = new Hono<{ Bindings: CloudflareBindings }>()
-```
+> 名称与子品牌均为工作方案，未做商标核查；奖项、权重、比例、价格均为讨论稿。平台不提供公众募资、保收益或资金托管；演示数据均已标注。
