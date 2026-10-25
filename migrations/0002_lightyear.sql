@@ -1,4 +1,4 @@
--- 光年计划：5000万元 Seedance 影视算力共享（标准Token = Seedance 2.0 不含视频输入刊例价 46元/百万tokens 折算）
+-- 迭影计划：5000万元 Seedance 影视算力共享（标准Token = Seedance 2.0 不含视频输入刊例价 46元/百万tokens 折算）
 CREATE TABLE IF NOT EXISTS compute_buckets (
   code TEXT PRIMARY KEY, name TEXT, amount_yuan REAL, std_tokens INTEGER,
   granted INTEGER DEFAULT 0, intro TEXT, sort INTEGER DEFAULT 0

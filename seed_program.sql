@@ -1,4 +1,4 @@
--- 光年计划演示数据（评审/导师为公开报道中的行业评审经历，平台状态为“邀约中”，以官方确认为准）
+-- 迭影计划演示数据（评审/导师为公开报道中的行业评审经历，平台状态为“邀约中”，以官方确认为准）
 INSERT INTO program_people (name,title,role,record,source,source_url,status,sort) VALUES ('田壮壮','导演、北京电影学院教授','评审','北京电影学院导演系第十四届“学生导演奖”特邀评委会主席','北京电影学院导演系《第十四届“学生导演奖”评委会阵容》2025-11','https://www.bfa.edu.cn/daoyan/info/1012/3424.htm','邀约中',0);
 INSERT INTO program_people (name,title,role,record,source,source_url,status,sort) VALUES ('管虎','导演','评审','第十五届北京国际电影节 AIGC 电影单元终审评委会主席','浙江新闻《第十五届北京国际电影节开幕》2025-04-19','https://zjnews.zjol.com.cn/zjnews/202504/t20250419_30947562.shtml','邀约中',1);
 INSERT INTO program_people (name,title,role,record,source,source_url,status,sort) VALUES ('陆川','导演','评审','第十六届北京国际电影节 AIGC 单元 72 小时创作赛评委主席','中国传媒大学新闻网《第十六届北京国际电影节AIGC电影单元圆满落幕》2026-05-06','https://www.cuc.edu.cn/cucnews/_t114/2026/0506/c1976a269895/page.psp','邀约中',2);

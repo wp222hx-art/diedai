@@ -1,17 +1,17 @@
--- 光年计划演示数据
+-- 迭影计划演示数据
 INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('onboard','普惠入驻池',4000000,86956521739,0,'所有入驻且有项目的创作者共享：入驻礼与成长任务即领即用',1);
-INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('selected','入选扶持池',22500000,489130434782,0,'评审≥70分、提名或获奖的项目（星耀）：按预测需求定向覆盖60%',2);
-INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('incubate','孵化里程碑池',15000000,326086956521,0,'孵化包（星河）/联合开发包（光年）：随M1—M4里程碑分批释放',3);
+INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('selected','入选扶持池',22500000,489130434782,0,'评审≥70分、提名或获奖的项目（入选）：按预测需求定向覆盖60%',2);
+INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('incubate','孵化里程碑池',15000000,326086956521,0,'孵化包 / 联合开发包：随M1—M4里程碑分批释放',3);
 INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('honor','盛典荣誉池',5000000,108695652173,0,'迭代盛典获奖作品荣誉加成，每个有效奖项1亿标准Token',4);
 INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('reserve','风险与机动池',3500000,76086956521,0,'供应中断补偿、返工兜底与特别项目，动用需双人审批',5);
-INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,NULL,'join','星火','onboard',5000000,'已到账','入驻礼');
-INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,NULL,'asset','星火','onboard',5000000,'已到账','创建首个作品档案');
-INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,NULL,'entry','星火','onboard',10000000,'已到账','提交盛典报名');
-INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,1,'honor:1','星耀','honor',100000000,'已到账','2026迭代盛典·最佳叙事作品荣誉加成');
-INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,2,'apply:2:星河','星河','incubate',600000000,'已授予','《山海食肆》孵化包定向额度（演示）');
-INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (2,NULL,'join','星火','onboard',5000000,'已到账','入驻礼');
-INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (2,3,'apply:3:光年','光年','incubate',3200000000,'已授予','《星环邮差》联合开发包定向额度（演示）');
-INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (2,4,'apply:4:星耀','星耀','selected',90000000,'待审批','《长安夜行录》定向额度申请（演示）');
+INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,NULL,'join','体验','onboard',5000000,'已到账','入驻礼');
+INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,NULL,'asset','体验','onboard',5000000,'已到账','创建首个作品档案');
+INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,NULL,'entry','体验','onboard',10000000,'已到账','提交盛典报名');
+INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,1,'honor:1','入选','honor',100000000,'已到账','2026迭代盛典·最佳叙事作品荣誉加成');
+INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,2,'apply:2:孵化','孵化','incubate',600000000,'已授予','《山海食肆》孵化包定向额度（演示）');
+INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (2,NULL,'join','体验','onboard',5000000,'已到账','入驻礼');
+INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (2,3,'apply:3:共创','共创','incubate',3200000000,'已授予','《星环邮差》联合开发包定向额度（演示）');
+INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (2,4,'apply:4:入选','入选','selected',90000000,'待审批','《长安夜行录》定向额度申请（演示）');
 UPDATE compute_buckets SET granted=(SELECT COALESCE(SUM(tokens),0) FROM compute_grants g WHERE g.bucket=compute_buckets.code AND g.status IN ('已到账','已授予'));
 INSERT INTO compute_usage (user_id,asset_id,request_id,model,resolution,seconds,raw_tokens,std_tokens,note) VALUES (1,2,'seed-usage-1','2.0','720p',600,12960000,12960000,'M1技术试制（演示）');
 INSERT INTO insights (title,source,url,date,summary,tag) VALUES ('Seedance 2.0 定价：不含视频输入46元/百万tokens','新浪财经','https://finance.sina.com.cn/tech/csj/2026-03-05/doc-inhpxspk3221552.shtml?froms=ggmp','2026-03-05','火山引擎公布Seedance 2.0定价：含视频输入28元/百万tokens、不含视频输入46元/百万tokens；720p约“1秒1元”。','算力定价');

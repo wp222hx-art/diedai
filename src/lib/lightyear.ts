@@ -1,5 +1,5 @@
 // ================================================================
-// 光年计划 · Seedance 影视算力预测引擎（光年公式 LY-1.0）
+// 迭影计划 · Seedance 影视算力预测引擎（迭影公式 DY-1.0）
 // Token 口径（火山引擎公开）：tokens = (输入视频秒 + 输出视频秒) × 宽 × 高 × 帧率 / 1024
 // 刊例价（公开报道）：Seedance 2.0 不含视频输入 46 元/百万、含视频输入 28 元/百万
 //                    Seedance 2.5 不含视频输入 70 元/百万、含视频输入 42 元/百万
@@ -139,16 +139,16 @@ export function predict(inp: PredictInput) {
 export const TASKS = [
   { code: 'join', name: '入驻礼', desc: '以创作者身份完成入驻', tokens: 5_000_000, icon: 'fa-door-open' },
   { code: 'asset', name: '建立首个作品档案', desc: '“有项目”是共享算力的门槛', tokens: 5_000_000, icon: 'fa-film' },
-  { code: 'predict', name: '完成一次光年预测', desc: '用预测器测算你的项目', tokens: 3_000_000, icon: 'fa-wand-magic-sparkles' },
+  { code: 'predict', name: '完成一次迭影测算', desc: '用预测器测算你的项目', tokens: 3_000_000, icon: 'fa-wand-magic-sparkles' },
   { code: 'entry', name: '报名迭代盛典', desc: '任一赛道提交并锁定版本', tokens: 10_000_000, icon: 'fa-trophy' },
   { code: 'listing', name: '挂牌迭代影市', desc: '权利清晰的作品自愿挂牌', tokens: 5_000_000, icon: 'fa-tag' },
   { code: 'event', name: '预约一场路演/工作坊', desc: '线上线下活动均可', tokens: 2_000_000, icon: 'fa-ticket' },
 ]
 export const TIERS = [
-  { code: '星火', name: '星火', en: 'SPARK', cond: '入驻并建立作品档案', give: '星火礼包 · 最高 3,000 万标准Token', bucket: 'onboard' },
-  { code: '星耀', name: '星耀', en: 'SHINE', cond: '评审 ≥70 分、提名或获奖', give: '预测基准用量 60%，上限 3 亿', pct: 0.6, cap: 300_000_000, bucket: 'selected' },
-  { code: '星河', name: '星河', en: 'GALAXY', cond: '签约孵化包', give: '预测基准用量 80%，上限 10 亿，按里程碑释放', pct: 0.8, cap: 1_000_000_000, bucket: 'incubate' },
-  { code: '光年', name: '光年', en: 'LIGHT-YEAR', cond: '签约联合开发包', give: '预测基准用量 100%，上限 50 亿，按里程碑释放', pct: 1.0, cap: 5_000_000_000, bucket: 'incubate' },
+  { code: '体验', name: '体验', en: 'SPARK', cond: '入驻并建立作品档案', give: '体验礼包 · 最高 3,000 万标准Token', bucket: 'onboard' },
+  { code: '入选', name: '入选', en: 'SHINE', cond: '评审 ≥70 分、提名或获奖', give: '预测基准用量 60%，上限 3 亿', pct: 0.6, cap: 300_000_000, bucket: 'selected' },
+  { code: '孵化', name: '孵化', en: 'GALAXY', cond: '签约孵化包', give: '预测基准用量 80%，上限 10 亿，按里程碑释放', pct: 0.8, cap: 1_000_000_000, bucket: 'incubate' },
+  { code: '共创', name: '共创', en: 'CO-CREATION', cond: '签约联合开发包', give: '预测基准用量 100%，上限 50 亿，按里程碑释放', pct: 1.0, cap: 5_000_000_000, bucket: 'incubate' },
 ]
 export const HONOR_BONUS = 100_000_000
 

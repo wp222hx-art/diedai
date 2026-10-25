@@ -1,4 +1,4 @@
-/* 光年计划 · 5000万元 Seedance 影视算力共享 */
+/* 迭影计划 · 5000万元 Seedance 影视算力共享 */
 (function () {
   const R = window.ROUTES
   const tok = (n) => {
@@ -10,8 +10,8 @@
   const yuanOf = (std) => Math.round((std / 1e6) * 46)
   const secOf720 = (std) => Math.round(std / 21600) // 720p 每秒 21,600 tokens（2.0 刊例口径）
   window.lyTok = tok
-  const TIER_NO = { 星火: 'I', 星耀: 'II', 星河: 'III', 光年: 'IV' }
-  const TIER_EN = { 星火: 'ONBOARD', 星耀: 'SELECTED', 星河: 'INCUBATION', 光年: 'CO-DEVELOPMENT' }
+  const TIER_NO = { 体验: 'I', 入选: 'II', 孵化: 'III', 共创: 'IV' }
+  const TIER_EN = { 体验: 'ONBOARD', 入选: 'SELECTED', 孵化: 'INCUBATION', 共创: 'CO-DEVELOPMENT' }
   const PAL = ['#c9a45c', '#9c8355', '#7d7768', '#56534d', '#3a3835']
   const head = (no, title, note = '', extra = '') => `<div class="pg-head"><div class="no">${no}</div><div><h2>${title}</h2></div><div>${note ? `<p>${note}</p>` : ''}${extra}</div></div>`
 
@@ -19,16 +19,16 @@
   window.lightyearPoster = (ov) => {
     const p = ov.pool, pct = Math.min(100, (p.granted / p.std) * 100)
     return `<section class="pg-sec" id="lightyear-poster"><div class="wrap"><div class="pg-onesheet">
-      <a class="pg-sheet" href="#/lightyear" aria-label="光年计划">
+      <a class="pg-sheet" href="#/lightyear" aria-label="迭影计划">
         <div class="pg-sheet-top"><span>迭代盛典 × 捷成世纪</span><span>2026</span></div>
-        <div class="pg-sheet-mid"><div class="pg-label">光年计划 · AI 影视算力扶持</div><div class="pg-num">5,000<small>万元</small></div><div class="pg-sheet-title">Seedance 生成算力 免费共享</div></div>
-        <div class="pg-billing"><b>迭代影交汇</b> 联合 <b>捷成世纪</b> 发起 · 模型 <b>SEEDANCE 2.0 / 2.5</b><br>适用 入驻项目 · 入选项目 · 孵化签约项目 · 盛典获奖作品<br>额度以光年预测核定 · 按里程碑释放 · 不可提现或转让</div>
+        <div class="pg-sheet-mid"><div class="pg-label">迭影计划 · AI 影视算力扶持</div><div class="pg-num">5,000<small>万元</small></div><div class="pg-sheet-title">Seedance 生成算力 免费共享</div></div>
+        <div class="pg-billing"><b>迭代影交汇</b> 联合 <b>捷成世纪</b> 发起 · 模型 <b>SEEDANCE 2.0 / 2.5</b><br>适用 入驻项目 · 入选项目 · 孵化签约项目 · 盛典获奖作品<br>额度以迭影测算核定 · 按里程碑释放 · 不可提现或转让</div>
       </a>
       <div class="pg-copy">
         <div class="pg-label">Programme Notice · 计划公告</div>
         <h2>为入驻与入选项目提供<br>免费的 AI 影视生成算力</h2>
-        <p>迭代影交汇联合捷成世纪，拟投入价值 <b class="gold">5,000 万元</b> 的 Seedance 2.0 / 2.5 视频生成算力。凡在平台建档的项目均可领取基础额度；入选、签约项目依据「光年预测」核定定向额度，最高覆盖预测用量的 100%。按基准口径测算，总池约可支撑 <b style="color:var(--text)">${p.ref_projects.toLocaleString()} 部</b> 60 分钟 720p AI 剧集的生成用量。</p>
-        <table class="pg-table compact" style="margin:18px 0 6px"><tbody>${ov.tiers.map((t) => `<tr><td class="n">${TIER_NO[t.code]}</td><td class="t"><b>${t.name}</b></td><td class="c small muted">${esc(t.cond)}</td><td class="r small">${esc(t.give.split('，')[0].replace('星火礼包 · ', ''))}</td></tr>`).join('')}</tbody></table>
+        <p>迭代影交汇联合捷成世纪，拟投入价值 <b class="gold">5,000 万元</b> 的 Seedance 2.0 / 2.5 视频生成算力。凡在平台建档的项目均可领取基础额度；入选、签约项目依据「迭影测算」核定定向额度，最高覆盖预测用量的 100%。按基准口径测算，总池约可支撑 <b style="color:var(--text)">${p.ref_projects.toLocaleString()} 部</b> 60 分钟 720p AI 剧集的生成用量。</p>
+        <table class="pg-table compact" style="margin:18px 0 6px"><tbody>${ov.tiers.map((t) => `<tr><td class="n">${TIER_NO[t.code]}</td><td class="t"><b>${t.name}</b></td><td class="c small muted">${esc(t.cond)}</td><td class="r small">${esc(t.give.split('，')[0].replace('体验礼包 · ', ''))}</td></tr>`).join('')}</tbody></table>
         <div class="between xs" style="margin-top:14px"><span class="muted">已发放</span><span class="mono">${tok(p.granted)} / ${tok(p.std)} 标准Token</span></div><div class="bar" style="margin-top:6px"><i style="width:${Math.max(pct, 1)}%"></i></div>
         <div class="row" style="margin-top:22px"><a class="btn btn-gold" href="#/lightyear">查看计划与申领</a><a class="btn" href="#/lightyear/predict">算力与周期预测</a></div>
       </div></div></div></section>`
@@ -44,7 +44,7 @@
     app.innerHTML = `
     <section class="pg-hero"><div class="wrap">
       <div class="pg-label">迭代盛典 × 捷成世纪 · Seedance 2.0 / 2.5</div>
-      <h1>光年计划<br><span>5,000 万元</span> AI 影视算力扶持</h1>
+      <h1>迭影计划<br><span>5,000 万元</span> AI 影视算力扶持</h1>
       <p class="lead">面向平台全部有项目的创作者与团队：建档即可领取基础额度，入选与签约项目按可解释的预测模型核定定向额度，随制作里程碑分批释放。</p>
       <div class="row"><a class="btn btn-gold" href="${S.user ? '#/lightyear/wallet' : '#/login?mode=register&next=' + encodeURIComponent('#/lightyear/wallet')}">${S.user ? '我的算力账户' : '入驻并申领'}</a><a class="btn" href="#/lightyear/predict">算力与周期预测</a></div>
     </div></section>
@@ -73,7 +73,7 @@
     </div></div></section>
 
     <section class="section" style="padding-top:0"><div class="wrap">
-      ${head('04', '测算方法 · LY-1.0', '算力用量可预测、可复核。定向额度以此公式的基准场景为依据。', '<a class="pg-link small" href="#/lightyear/predict">打开预测工具 →</a>')}
+      ${head('04', '测算方法 · DY-1.0', '算力用量可预测、可复核。定向额度以此公式的基准场景为依据。', '<a class="pg-link small" href="#/lightyear/predict">打开预测工具 →</a>')}
       <div class="pg-formula">
         <div class="main">T = Σ<sub>j</sub> E<sub>j</sub> × M<sub>j</sub> × O × (1+i) × W·H·24/1024 × (1+8%)</div>
         <div class="sub"><span>M<sub>j</sub> = k ÷ q<sub>j</sub> × (1 + r)</span><span>q<sub>j</sub> = 1 − (1 − p<sub>j</sub>)<sup>k</sup></span><span>p<sub>j</sub> = p₀<sub>j</sub> × 风格 × 团队 × 模型</span></div>
@@ -92,13 +92,13 @@
     </div></section>`
   }
 
-  // ---------- 光年预测器 ----------
+  // ---------- 迭影测算 ----------
   async function predictPage(app) {
     const ov = await api('/lightyear/overview')
     let assets = []
     if (S.user && S.user.role === 'creator') { try { assets = (await api('/lightyear/me')).assets } catch {} }
     const sel = (name, obj, val) => `<select class="input" name="${name}">${Object.entries(obj).map(([k, v]) => `<option value="${k}" ${k === val ? 'selected' : ''}>${esc(v.label || v.name || v)}</option>`).join('')}</select>`
-    app.innerHTML = `<section class="pg-hero sm"><div class="wrap"><div class="pg-label">光年计划 · Forecast LY-1.0</div><h1 style="font-size:clamp(28px,4.4vw,44px)">算力与制作周期预测</h1><p class="lead" style="margin:8px 0 0">输入片长、风格、镜头构成与模型策略，测算 Token 用量、刊例成本、制作周期及计划可覆盖额度。</p></div></section>
+    app.innerHTML = `<section class="pg-hero sm"><div class="wrap"><div class="pg-label">迭影计划 · Forecast DY-1.0</div><h1 style="font-size:clamp(28px,4.4vw,44px)">算力与制作周期预测</h1><p class="lead" style="margin:8px 0 0">输入片长、风格、镜头构成与模型策略，测算 Token 用量、刊例成本、制作周期及计划可覆盖额度。</p></div></section>
     <div class="wrap section" style="padding-top:26px"><div class="cards split ly-pred">
       <form id="pred-form" class="card">
         ${assets.length ? `<div class="field"><label>关联作品（用于申请定向额度）</label><select class="input" name="asset_id"><option value="">不关联</option>${assets.map((a) => `<option value="${a.id}">《${esc(a.title)}》</option>`).join('')}</select></div>` : ''}
@@ -154,7 +154,7 @@
 
   // ---------- 我的算力钱包 ----------
   async function walletPage(app) {
-    if (!S.user) return needLogin(app, '登录后查看你的光年算力钱包')
+    if (!S.user) return needLogin(app, '登录后查看你的迭影算力钱包')
     if (S.user.role !== 'creator') {
       if (['operator', 'finance', 'admin'].includes(S.user.role)) return adminPage(app)
       app.innerHTML = `<div class="wrap section"><div class="empty"><i class="fa-solid fa-circle-info"></i>算力额度面向创作者 / 团队发放。<div style="margin-top:12px"><a class="btn btn-sm" href="#/lightyear">返回活动页</a></div></div></div>`; return
@@ -163,7 +163,7 @@
     const b = d.balance
     app.innerHTML = `<div class="wrap section" style="padding-top:28px">
       <div class="pg-wallet">
-        <div class="between"><div><div class="pg-label">光年计划 · 算力账户</div><div class="row" style="margin-top:8px"><span class="pg-level">${TIER_NO[d.level] || ''} ${esc(d.level)}</span><span class="small muted">${esc(S.user.name)}</span></div></div><a class="btn btn-sm" href="#/lightyear/predict">算力预测</a></div>
+        <div class="between"><div><div class="pg-label">迭影计划 · 算力账户</div><div class="row" style="margin-top:8px"><span class="pg-level">${TIER_NO[d.level] || ''} ${esc(d.level)}</span><span class="small muted">${esc(S.user.name)}</span></div></div><a class="btn btn-sm" href="#/lightyear/predict">算力预测</a></div>
         <div class="pg-num">${tok(b.available)}</div><div class="xs muted" style="margin-bottom:16px">可用标准Token</div>
         <div class="pg-kv" style="grid-template-columns:repeat(4,1fr)"><div><b>${tok(b.granted)}</b><span>累计获得</span></div><div><b>${tok(b.used)}</b><span>已消耗</span></div><div><b>${Math.floor(secOf720(b.available) / 60).toLocaleString()} 分钟</b><span>≈ 720p 可生成</span></div><div><b>${money(yuanOf(b.available))}</b><span>≈ 刊例价值</span></div></div>
       </div>
@@ -174,8 +174,8 @@
               ${t.claimed ? '<span class="tag green"><i class="fa-solid fa-check"></i>已领</span>' : t.locked && t.code !== 'asset' ? '<span class="tag"><i class="fa-solid fa-lock"></i>需先建档</span>' : t.done ? `<button class="btn btn-sm btn-gold ly-claim" data-c="${t.code}">领取</button>` : `<a class="btn btn-sm" href="${{ asset: '#/workbench/assets?go=asset', predict: '#/lightyear/predict', entry: '#/workbench/entries?go=entry', listing: '#/workbench/listings?go=listing', event: '#/events' }[t.code] || '#/'}">去完成</a>`}</div>`).join('')}
             ${d.honors.map((h) => `<div class="pg-task ${h.claimed ? 'done' : ''}"><span class="n">+</span><div style="min-width:0"><b class="small">荣誉加成</b><div class="xs dim">《${esc(h.title)}》${esc(h.award)}</div></div><span class="mono xs">+${tok(h.tokens)}</span>${h.claimed ? '<span class="tag green">已领</span>' : `<button class="btn btn-sm btn-gold ly-claim" data-c="${h.code}">领取</button>`}</div>`).join('')}
           </div>
-          <div class="card"><b class="h3">申请定向额度（星耀 / 星河 / 光年）</b><p class="xs muted" style="margin:4px 0 12px">额度 = 光年预测基准用量 × 覆盖比例（封顶），需运营审批；星河/光年按里程碑分批释放。</p>
-            ${d.assets.length ? d.assets.map((a) => `<div class="ly-apply"><div style="flex:1;min-width:0"><b class="small">《${esc(a.title)}》</b><div class="xs dim">${esc(a.form)} · ${a.total_minutes}分钟 · ${a.last_prediction ? `最近预测 ${tok(a.last_prediction.std_tokens)}` : '<span class="red">尚未预测</span>'}</div><div class="row" style="margin-top:6px">${['星耀', '星河', '光年'].map((t) => `<span class="tag ${a.eligible.includes(t) ? 'gold' : ''}">${a.eligible.includes(t) ? '✓' : '✗'} ${t}</span>`).join('')}</div></div>
+          <div class="card"><b class="h3">申请定向额度（入选 / 孵化 / 共创）</b><p class="xs muted" style="margin:4px 0 12px">额度 = 迭影测算基准用量 × 覆盖比例（封顶），需运营审批；孵化/共创按里程碑分批释放。</p>
+            ${d.assets.length ? d.assets.map((a) => `<div class="ly-apply"><div style="flex:1;min-width:0"><b class="small">《${esc(a.title)}》</b><div class="xs dim">${esc(a.form)} · ${a.total_minutes}分钟 · ${a.last_prediction ? `最近预测 ${tok(a.last_prediction.std_tokens)}` : '<span class="red">尚未预测</span>'}</div><div class="row" style="margin-top:6px">${['入选', '孵化', '共创'].map((t) => `<span class="tag ${a.eligible.includes(t) ? 'gold' : ''}">${a.eligible.includes(t) ? '✓' : '✗'} ${t}</span>`).join('')}</div></div>
               <div class="row">${!a.last_prediction ? `<a class="btn btn-sm" href="#/lightyear/predict">去预测</a>` : a.eligible.map((t) => `<button class="btn btn-sm btn-gold ly-apply-btn" data-a="${a.id}" data-t="${t}" data-p="${a.last_prediction.id}">申请${t}</button>`).join('') || '<span class="xs dim">入选/签约后解锁</span>'}</div></div>`).join('') : '<div class="empty" style="padding:20px">先建立作品档案</div>'}
           </div>
         </div>
@@ -193,7 +193,7 @@
       try { const r = await api('/lightyear/claim', { body: { code: btn.dataset.c } }); toast(`已领取 ${tok(r.tokens)} 标准Token`, 'ok'); router() } catch (e) { errToast(e) }
     }))
     $$('.ly-apply-btn').forEach((btn) => (btn.onclick = async () => {
-      if (!confirm(`以最近一次光年预测为基础申请「${btn.dataset.t}」定向额度？`)) return
+      if (!confirm(`以最近一次迭影测算为基础申请「${btn.dataset.t}」定向额度？`)) return
       try { const r = await api('/lightyear/apply', { body: { asset_id: +btn.dataset.a, tier: btn.dataset.t, prediction_id: +btn.dataset.p } }); toast(`已提交申请：${tok(r.tokens)} 标准Token · ${r.note}`, 'ok'); router() } catch (e) { errToast(e) }
     }))
     const uf = $('#use-form')
@@ -204,7 +204,7 @@
   // ---------- 运营：额度审批 ----------
   async function adminPage(app) {
     const d = await api('/lightyear/admin')
-    app.innerHTML = `<div class="wrap section" style="padding-top:28px"><div class="pg-label">光年计划 · 运营</div><h2 class="h2">额度审批与资金池</h2>
+    app.innerHTML = `<div class="wrap section" style="padding-top:28px"><div class="pg-label">迭影计划 · 运营</div><h2 class="h2">额度审批与资金池</h2>
       <div class="cards c3" style="margin:18px 0">${d.buckets.map((b, i) => `<div class="card"><div class="between"><b class="small">${esc(b.name)}</b><span class="xs mono">${(b.amount_yuan / 1e4).toLocaleString()}万元</span></div><div class="mono" style="margin-top:6px">${tok(b.granted)} / ${tok(b.std_tokens)}</div><div class="bar" style="height:6px;margin-top:6px"><i style="width:${Math.max(1, (b.granted / b.std_tokens) * 100)}%;background:${PAL[i]}"></i></div></div>`).join('')}</div>
       <div class="table-wrap"><table class="tbl rwd"><thead><tr><th>创作者</th><th>说明</th><th>星阶/池</th><th>额度</th><th>状态</th><th>操作</th></tr></thead><tbody>${d.grants.map((g) => `<tr><td data-l="创作者">${esc(g.name)}</td><td data-l="说明" class="full small">${esc(g.note)}</td><td data-l="星阶">${esc(g.tier)} · <span class="xs dim">${esc(g.bucket)}</span></td><td data-l="额度" class="mono">${tok(g.tokens)}</td><td data-l="状态">${statusTag(g.status)}</td><td data-l="操作">${g.status === '待审批' ? `<div class="row"><button class="btn btn-sm btn-gold" data-g="${g.id}" data-a="approve">批准</button><button class="btn btn-sm" data-g="${g.id}" data-a="reject">拒绝</button></div>` : '—'}</td></tr>`).join('')}</tbody></table></div></div>`
     $$('[data-g]').forEach((b) => (b.onclick = async () => { const body = { action: b.dataset.a }; if (b.dataset.a === 'reject') { body.reason = prompt('拒绝原因'); if (!body.reason) return } try { await api(`/lightyear/grants/${b.dataset.g}/decide`, { body }); toast('已处理', 'ok'); router() } catch (e) { errToast(e) } }))

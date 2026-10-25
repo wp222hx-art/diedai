@@ -35,7 +35,7 @@ r.get('/lightyear/overview', async (c) => {
   })
 })
 
-// ---------------- 公开：光年预测 ----------------
+// ---------------- 公开：迭影测算 ----------------
 r.post('/lightyear/predict', async (c) => {
   const b = await c.req.json().catch(() => ({}))
   const inp: PredictInput = {
@@ -84,7 +84,7 @@ async function myState(db: D1Database, user: { id: number; role: string }) {
     a.last_prediction = await db.prepare('SELECT id,std_tokens,created_at FROM compute_predictions WHERE user_id=? AND asset_id=? ORDER BY id DESC LIMIT 1').bind(uid, a.id).first()
   }
   const usage = (await db.prepare('SELECT * FROM compute_usage WHERE user_id=? ORDER BY id DESC LIMIT 30').bind(uid).all()).results
-  const level = grants.some((x) => x.tier === '光年' && x.status !== '已拒绝') ? '光年' : grants.some((x) => x.tier === '星河' && x.status !== '已拒绝') ? '星河' : grants.some((x) => x.tier === '星耀') ? '星耀' : counts.assets ? '星火' : '未点亮'
+  const level = grants.some((x) => x.tier === '共创' && x.status !== '已拒绝') ? '共创' : grants.some((x) => x.tier === '孵化' && x.status !== '已拒绝') ? '孵化' : grants.some((x) => x.tier === '入选') ? '入选' : counts.assets ? '体验' : '未点亮'
   return { balance: await balance(db, uid), level, tasks, honors, assets, grants, usage }
 }
 
@@ -93,10 +93,10 @@ async function eligibleTiers(db: D1Database, assetId: number) {
   const sel = await db.prepare(`SELECT 1 FROM entries en WHERE en.asset_id=? AND (en.status IN ('提名','获奖')
       OR EXISTS (SELECT 1 FROM review_assignments ra WHERE ra.entry_id=en.id AND ra.status='已提交' AND ra.total>=70)
       OR EXISTS (SELECT 1 FROM award_results ar WHERE ar.entry_id=en.id AND ar.status='有效'))`).bind(assetId).first()
-  if (sel) out.push('星耀')
+  if (sel) out.push('入选')
   const pj = (await db.prepare("SELECT package FROM projects WHERE asset_id=? AND status NOT IN ('待材料审核','待专业评审')").bind(assetId).all()).results as any[]
-  if (pj.some((p) => p.package === '孵化包')) out.push('星河')
-  if (pj.some((p) => p.package === '联合开发包')) out.push('光年')
+  if (pj.some((p) => p.package === '孵化包')) out.push('孵化')
+  if (pj.some((p) => p.package === '联合开发包')) out.push('共创')
   return out
 }
 
@@ -106,15 +106,15 @@ r.post('/lightyear/claim', async (c) => {
   const { code } = await c.req.json().catch(() => ({}))
   const db = c.env.DB, uid = g.user.id
   const me: any = await myState(db, g.user)
-  let tokens = 0, note = '', assetId: number | null = null, bucket = 'onboard', tier = '星火'
+  let tokens = 0, note = '', assetId: number | null = null, bucket = 'onboard', tier = '体验'
   if (String(code).startsWith('honor:')) {
     const h = me.honors.find((x: any) => x.code === code)
     if (!h) return c.json({ error: '没有可领取的荣誉加成' }, 404)
-    tokens = HONOR_BONUS; note = `荣誉加成：《${h.title}》${h.award}`; assetId = h.asset_id; bucket = 'honor'; tier = '星耀'
+    tokens = HONOR_BONUS; note = `荣誉加成：《${h.title}》${h.award}`; assetId = h.asset_id; bucket = 'honor'; tier = '入选'
   } else {
     const t = me.tasks.find((x: any) => x.code === code)
     if (!t) return c.json({ error: '任务不存在' }, 404)
-    if (t.locked) return c.json({ error: '请先建立作品档案——“有项目”才能共享光年算力' }, 409)
+    if (t.locked) return c.json({ error: '请先建立作品档案——“有项目”才能共享迭影算力' }, 409)
     if (!t.done) return c.json({ error: '任务尚未完成：' + t.desc }, 409)
     tokens = t.tokens; note = t.name
   }
@@ -132,7 +132,7 @@ r.post('/lightyear/claim', async (c) => {
   return c.json({ ok: true, tokens, balance: await balance(db, uid) })
 })
 
-// ---------------- 申请定向额度（星耀/星河/光年）----------------
+// ---------------- 申请定向额度（入选/孵化/共创）----------------
 r.post('/lightyear/apply', async (c) => {
   const g = need(c, ['creator']); if (g.err) return g.err
   const b = await c.req.json().catch(() => ({}))
@@ -140,11 +140,11 @@ r.post('/lightyear/apply', async (c) => {
   const a = await db.prepare('SELECT * FROM assets WHERE id=? AND owner_id=?').bind(b.asset_id, g.user.id).first<any>()
   if (!a) return c.json({ error: '作品不存在或无权限' }, 403)
   const tier = TIERS.find((t) => t.code === b.tier && t.pct)
-  if (!tier) return c.json({ error: '请选择星耀/星河/光年' }, 422)
+  if (!tier) return c.json({ error: '请选择入选/孵化/共创' }, 422)
   const el = await eligibleTiers(db, a.id)
   if (!el.includes(tier.code)) return c.json({ error: `《${a.title}》尚未满足「${tier.name}」条件：${tier.cond}` }, 409)
   const pr = await db.prepare('SELECT * FROM compute_predictions WHERE id=? AND user_id=?').bind(b.prediction_id, g.user.id).first<any>()
-  if (!pr) return c.json({ error: '请先为该作品完成一次光年预测，额度按预测基准用量核定' }, 422)
+  if (!pr) return c.json({ error: '请先为该作品完成一次迭影测算，额度按预测基准用量核定' }, 422)
   const tokens = Math.min(tier.cap!, Math.round(pr.std_tokens * tier.pct!))
   const code = `apply:${a.id}:${tier.code}`
   const dup = await db.prepare("SELECT id FROM compute_grants WHERE user_id=? AND task_code=? AND status!='已拒绝'").bind(g.user.id, code).first()
@@ -153,7 +153,7 @@ r.post('/lightyear/apply', async (c) => {
   const res = await db.prepare("INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,prediction_id,note) VALUES (?,?,?,?,?,?,'待审批',?,?)")
     .bind(g.user.id, a.id, code, tier.code, tier.bucket, tokens, pr.id, `《${a.title}》${tier.name}定向额度`).run()
   await audit(db, g.user, 'lightyear.apply', 'grant:' + res.meta.last_row_id, `${tier.code} ${tokens}`)
-  return c.json({ id: res.meta.last_row_id, tokens, status: '待审批', note: tier.code === '星耀' ? '审批通过后一次性到账' : '审批通过后按 M1—M4 里程碑分批释放' })
+  return c.json({ id: res.meta.last_row_id, tokens, status: '待审批', note: tier.code === '入选' ? '审批通过后一次性到账' : '审批通过后按 M1—M4 里程碑分批释放' })
 })
 
 // ---------------- 运营审批 ----------------

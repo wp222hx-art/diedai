@@ -1,4 +1,4 @@
-/* 光年计划 · 活动主站（首页 / 初选榜 / 评审导师 / 配套支持 / 出海交易 / 报名 / 我的） */
+/* 迭影计划 · 活动主站（首页 / 初选榜 / 评审导师 / 配套支持 / 出海交易 / 报名 / 我的） */
 (function () {
   const R = window.ROUTES
   const tok = (n) => window.lyTok(n)
@@ -22,8 +22,9 @@
     app.innerHTML = `
     <section class="pg-hero pg-hero-home"><div class="wrap">
       <div class="pg-label">迭代 × 捷成世纪 · 2027 年度扶持计划</div>
-      <h1>光年计划</h1>
+      <h1>迭影计划</h1>
       <p class="pg-hero-sub"><span>5,000 万元</span> AI 影视算力扶持</p>
+      <p class="pg-slogan">每一次迭代，离银幕更近一帧</p>
       <p class="lead">面向国内所有 AI 专业级电影团队与影视院校毕业生，提供 <b style="color:var(--text)">免费算力、完片孵化、发行支持</b>。提交作品，邀请观众打分，通过路演即可获得 Seedance 2.0 / 2.5 专业影视模型算力。</p>
       <div class="row"><a class="btn btn-gold" href="${applyHref()}">立即报名</a><a class="btn" href="#/board">查看初选榜</a></div>
       <div class="pg-hero-meta"><span>报名截止 <b>2027.01.31</b></span><span>已报名 <b>${s.apps || 0}</b> 部</span><span>累计评分 <b>${(s.votes || 0).toLocaleString()}</b> 人次</span></div>
@@ -64,7 +65,7 @@
         ${[['#/support', '专家支持', '编剧、摄影、美术、剪辑、AIGC 技术专家按需问诊'], ['#/support/likeness', '老艺术家肖像授权', '经授权的肖像与声音素材，合法用于 AI 影视创作'], ['#/export', '海外发行与版权交易', '译配、合规、海外平台分发，成片可挂牌交易'], ['#/support/predict', '算力与周期测算', '按片长、风格、镜头构成预测 Token 用量与制作周期']]
           .map(([h, t, p]) => `<a href="${h}"><b>${t}</b><span class="small muted">${p}</span><i class="fa-solid fa-arrow-right"></i></a>`).join('')}
       </div>
-      <div class="pg-cta"><div><div class="pg-label">报名进行中</div><b>把你的 AI 电影交给光年计划</b></div><a class="btn btn-gold" href="${applyHref()}">立即报名</a></div>
+      <div class="pg-cta"><div><div class="pg-label">报名进行中</div><b>每一次迭代，离银幕更近一帧</b></div><a class="btn btn-gold" href="${applyHref()}">立即报名</a></div>
       <p class="xs dim" style="margin-top:14px">${esc(d.note)}</p>
     </div></section>`
   }
@@ -143,7 +144,7 @@
     const [ex, lk] = await Promise.all([api('/experts').catch(() => ({ experts: [] })), api('/program/likeness')])
     const experts = ex.experts || ex.rows || []
     const tab = p[0] === 'likeness' ? 'likeness' : 'experts'
-    app.innerHTML = `<section class="pg-hero sm"><div class="wrap"><div class="pg-label">光年计划 · 配套支持</div><h1 style="font-size:clamp(28px,4.4vw,44px)">配套支持</h1>
+    app.innerHTML = `<section class="pg-hero sm"><div class="wrap"><div class="pg-label">迭影计划 · 配套支持</div><h1 style="font-size:clamp(28px,4.4vw,44px)">配套支持</h1>
       <p class="lead" style="margin:8px 0 0">专家问诊、老艺术家肖像授权与算力测算，为入选团队补齐创作所需的人、权、算。</p></div></section>
     <div class="wrap section" style="padding-top:22px">
       <div class="tabs">${[['experts', '专家支持', '#/support'], ['likeness', '肖像授权', '#/support/likeness'], ['predict', '算力测算', '#/support/predict']].map(([k, l, h]) => `<a class="tab ${tab === k ? 'active' : ''}" href="${h}">${l}</a>`).join('')}</div>
@@ -191,9 +192,9 @@
 
   // ================= 报名 =================
   R.apply = async (app) => {
-    if (!S.user) return needLogin(app, '请先注册 / 登录后报名光年计划')
-    if (S.user.role !== 'creator') { app.innerHTML = `<div class="wrap section"><div class="empty"><i class="fa-solid fa-circle-info"></i>光年计划面向创作团队报名，当前账号为「${esc(S.user.role_label || '')}」。<div style="margin-top:12px"><a class="btn btn-sm" href="#/">返回计划</a></div></div></div>`; return }
-    app.innerHTML = `<section class="pg-hero sm"><div class="wrap"><div class="pg-label">光年计划 · 报名</div><h1 style="font-size:clamp(28px,4.4vw,44px)">提交作品</h1><p class="lead" style="margin:8px 0 0">报名后获得专属打分链接，邀请他人为作品评分进入初选排名。</p></div></section>
+    if (!S.user) return needLogin(app, '请先注册 / 登录后报名迭影计划')
+    if (S.user.role !== 'creator') { app.innerHTML = `<div class="wrap section"><div class="empty"><i class="fa-solid fa-circle-info"></i>迭影计划面向创作团队报名，当前账号为「${esc(S.user.role_label || '')}」。<div style="margin-top:12px"><a class="btn btn-sm" href="#/">返回计划</a></div></div></div>`; return }
+    app.innerHTML = `<section class="pg-hero sm"><div class="wrap"><div class="pg-label">迭影计划 · 报名</div><h1 style="font-size:clamp(28px,4.4vw,44px)">提交作品</h1><p class="lead" style="margin:8px 0 0">报名后获得专属打分链接，邀请他人为作品评分进入初选排名。</p></div></section>
     <div class="wrap section" style="padding-top:22px;max-width:760px">
       <form id="apply-form" class="card">
         <div class="field"><label>报名赛道 <em>*</em></label><div class="ly-seg" data-name="track"><button type="button" data-v="专业团队" class="on">AI 专业电影团队</button><button type="button" data-v="院校毕业生">影视院校毕业生</button></div></div>
@@ -203,7 +204,7 @@
         <div class="field"><label>一句话梗概 <em>*</em></label><textarea class="input" name="logline" maxlength="200" style="min-height:76px"></textarea></div>
         <div class="field"><label>样片 / 概念片链接</label><input class="input" name="video_url" placeholder="网盘或视频平台链接，1—3 分钟为宜"></div>
         <div class="field"><label>主创成员</label><input class="input" name="members" placeholder="导演、编剧、AIGC 技术等"></div>
-        <label class="check"><input type="checkbox" name="accept"> 我已阅读并同意《光年计划报名规则》：作品权利清晰，使用的肖像、音乐与素材均已获授权；同意平台展示作品信息用于初选。</label>
+        <label class="check"><input type="checkbox" name="accept"> 我已阅读并同意《迭影计划报名规则》：作品权利清晰，使用的肖像、音乐与素材均已获授权；同意平台展示作品信息用于初选。</label>
         <button class="btn btn-gold btn-block" style="margin-top:12px">提交报名</button>
       </form></div>`
     const f = $('#apply-form')
@@ -223,7 +224,7 @@
     const d = await api('/program/mine')
     const FLOW = ['初选中', '晋级路演', '路演通过', '已审批']
     app.innerHTML = `<div class="wrap section" style="padding-top:26px">
-      <div class="pg-wallet"><div class="between"><div><div class="pg-label">我的 · 光年计划</div><b style="font-size:18px">${esc(S.user.name)}</b></div><a class="btn btn-sm btn-gold" href="#/apply">报名新作品</a></div>
+      <div class="pg-wallet"><div class="between"><div><div class="pg-label">我的 · 迭影计划</div><b style="font-size:18px">${esc(S.user.name)}</b></div><a class="btn btn-sm btn-gold" href="#/apply">报名新作品</a></div>
         <div class="pg-num">${tok(d.balance.available)}</div><div class="xs muted" style="margin-bottom:12px">可用标准Token（≈ ¥${Math.round((d.balance.available / 1e6) * 46).toLocaleString()} 刊例价值）</div>
         <div class="row"><a class="btn btn-sm" href="#/lightyear/wallet">算力账户与流水</a><a class="btn btn-sm" href="#/support/predict">算力测算</a><a class="btn btn-sm" href="#/workbench">创作工作台</a></div></div>
       <div style="height:26px"></div>
@@ -243,7 +244,7 @@
   async function adminPage(app) {
     const d = await api('/program/admin')
     app.innerHTML = `<div class="wrap section" style="padding-top:26px">
-      <div class="between"><div><div class="pg-label">运营 · 光年计划</div><h2 class="h2">初选、路演与算力审批</h2></div><div class="row"><button class="btn btn-gold btn-sm" id="promote-btn">按规则推荐晋级</button><a class="btn btn-sm" href="#/lightyear/wallet">资金池</a><a class="btn btn-sm" href="#/workbench">运营工作台</a></div></div>
+      <div class="between"><div><div class="pg-label">运营 · 迭影计划</div><h2 class="h2">初选、路演与算力审批</h2></div><div class="row"><button class="btn btn-gold btn-sm" id="promote-btn">按规则推荐晋级</button><a class="btn btn-sm" href="#/lightyear/wallet">资金池</a><a class="btn btn-sm" href="#/workbench">运营工作台</a></div></div>
       <p class="xs muted" style="margin:8px 0 16px">规则：赛道前 ${d.rules.top_pct}% 且 ≥${d.rules.min_votes} 人评分推荐晋级；路演 ≥70 分通过；算力发放需两名不同运营人员审批。</p>
       <div class="table-wrap"><table class="tbl rwd"><thead><tr><th>作品</th><th>赛道</th><th>评分</th><th>状态</th><th>路演</th><th>操作</th></tr></thead><tbody>
       ${d.rows.map((x) => `<tr><td data-l="作品"><b class="small">${esc(x.title)}</b><div class="xs dim">${esc(x.team)}</div></td><td data-l="赛道" class="small">${esc(x.track)} #${x.rank}</td><td data-l="评分" class="mono small">${x.score.toFixed(2)} · ${x.votes}人${x.recommend ? ' <span class="tag gold">推荐</span>' : ''}</td><td data-l="状态">${stTag(x.status)}</td><td data-l="路演" class="small">${x.roadshow_score ?? '—'}</td>

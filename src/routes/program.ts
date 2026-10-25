@@ -3,7 +3,7 @@ import { Env, need, audit, emit, rid } from '../lib/core'
 import { POOL_YUAN, POOL_STD, STD_PRICE, MODELS } from '../lib/lightyear'
 
 /**
- * 光年计划 · 主流程
+ * 迭影计划 · 主流程
  * 报名 → 线上初选（邀请打分，贝叶斯加权排名）→ 晋级路演 → 路演评审 → 双人审批 → 算力发放
  */
 const r = new Hono<Env>()
@@ -133,7 +133,7 @@ r.post('/program/apply', async (c) => {
     const y = Number(b.grad_year)
     if (!(y >= 2021 && y <= 2027)) miss.push('毕业年份（2021—2027 届）')
   }
-  if (!b.accept) miss.push('同意《光年计划报名规则》')
+  if (!b.accept) miss.push('同意《迭影计划报名规则》')
   if (miss.length) return c.json({ error: '报名信息不完整', missing: miss }, 422)
   const title = String(b.title).replace(/^《|》$/g, '')
   const code = rid(6).toUpperCase()
@@ -231,7 +231,7 @@ r.post('/program/apps/:id/approve', async (c) => {
     return c.json({ error: '资金池余额不足' }, 409)
   }
   const gr = await db.prepare("INSERT INTO compute_grants (user_id,task_code,tier,bucket,tokens,status,note,approver) VALUES (?,?,?,?,?,'已授予',?,?)")
-    .bind(a.user_id, 'program:' + id, a.track === '院校毕业生' ? '院校专项' : '路演扶持', bucket, tokens, `${a.title} 光年计划路演通过 · 算力面值 ¥${a.grant_yuan.toLocaleString()}`, g.user.id).run()
+    .bind(a.user_id, 'program:' + id, a.track === '院校毕业生' ? '院校专项' : '路演扶持', bucket, tokens, `${a.title} 迭影计划路演通过 · 算力面值 ¥${a.grant_yuan.toLocaleString()}`, g.user.id).run()
   await db.prepare('UPDATE program_apps SET grant_id=? WHERE id=?').bind(gr.meta.last_row_id, id).run()
   await audit(db, g.user, 'program.approve2', 'program_app:' + id, `${tokens} std tokens`)
   await emit(db, 'program.granted', { id, tokens })

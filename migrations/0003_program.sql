@@ -1,4 +1,4 @@
--- 光年计划：报名 → 线上初选（邀请打分）→ 路演 → 双人审批 → 算力发放
+-- 迭影计划：报名 → 线上初选（邀请打分）→ 路演 → 双人审批 → 算力发放
 CREATE TABLE IF NOT EXISTS program_apps (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   code TEXT UNIQUE NOT NULL,              -- 公开分享码（邀请打分链接）
