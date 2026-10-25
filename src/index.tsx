@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { Env, authMiddleware } from './lib/core'
 import publicRoutes from './routes/public'
 import workRoutes from './routes/work'
+import lightyearRoutes from './routes/lightyear'
 
 const app = new Hono<Env>()
 
@@ -15,6 +16,7 @@ app.onError((err, c) => {
 app.get('/api/health', (c) => c.json({ ok: true, service: '迭代影交汇', version: '1.1.0' }))
 app.route('/api', publicRoutes)
 app.route('/api', workRoutes)
+app.route('/api', lightyearRoutes)
 app.all('/api/*', (c) => c.json({ error: '接口不存在' }, 404))
 
 const shell = `<!DOCTYPE html>
@@ -51,6 +53,7 @@ const shell = `<!DOCTYPE html>
 <script src="/static/app.js"></script>
 <script src="/static/pages.js"></script>
 <script src="/static/work.js"></script>
+<script src="/static/lightyear.js"></script>
 </body>
 </html>`
 

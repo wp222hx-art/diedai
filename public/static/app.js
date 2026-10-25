@@ -64,6 +64,7 @@
     ['#/', '发现', 'fa-compass'],
     ['#/festival', '迭代盛典', 'fa-trophy'],
     ['#/incubate', '迭代影创', 'fa-clapperboard'],
+    ['#/lightyear', '光年算力', 'fa-meteor'],
     ['#/market', '迭代影市', 'fa-handshake'],
     ['#/distribution', '发行中心', 'fa-satellite-dish'],
     ['#/events', '路演活动', 'fa-calendar-star'],
@@ -72,7 +73,7 @@
   function renderChrome() {
     const h = location.hash || '#/'
     const base = '#/' + (h.slice(2).split('/')[0] || '')
-    $('#main-nav').innerHTML = NAV.map(([href, label]) => `<a href="${href}" class="${base === href ? 'active' : ''}">${label}</a>`).join('')
+    $('#main-nav').innerHTML = NAV.map(([href, label]) => `<a href="${href}" class="${base === href ? 'active' : ''} ${href === '#/lightyear' ? 'nav-hot' : ''}">${label}</a>`).join('')
     const u = S.user
     $('#top-actions').innerHTML = u
       ? `<a class="btn btn-gold btn-sm btn-login-text" href="#/workbench"><i class="fa-solid fa-briefcase"></i>我的工作台</a>
@@ -83,13 +84,13 @@
       <a class="btn btn-block" href="#/workbench" data-close><i class="fa-solid fa-briefcase"></i>进入我的工作台</a><button class="btn btn-block btn-ghost" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>退出登录</button></div>`,
       (m) => ($('#logout-btn', m).onclick = () => { closeModal(); logout() }))
 
-    const tabs = [['#/', '发现', 'fa-compass'], ['#/festival', '盛典', 'fa-trophy'], ['#/workbench', '工作台', 'fa-plus', 'center'], ['#/market', '影市', 'fa-handshake'], ['#/distribution', '发行', 'fa-satellite-dish']]
+    const tabs = [['#/', '发现', 'fa-compass'], ['#/festival', '盛典', 'fa-trophy'], ['#/workbench', '工作台', 'fa-plus', 'center'], ['#/lightyear', '算力', 'fa-meteor'], ['#/market', '影市', 'fa-handshake']]
     $('#tabbar').innerHTML = tabs.map(([href, l, i, cls]) => `<a href="${href}" class="${cls || ''} ${base === href ? 'active' : ''}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')
 
     $('#drawer').innerHTML = `<div class="between" style="margin-bottom:10px"><b class="gold" style="font-family:var(--serif);font-size:18px">导航</b><button class="icon-btn" style="display:grid" id="drawer-close"><i class="fa-solid fa-xmark"></i></button></div>
       ${NAV.map(([href, l, i]) => `<a href="${href}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')}
       <a href="#/workbench"><i class="fa-solid fa-briefcase"></i>我的工作台</a>
-      <a href="#/estimator"><i class="fa-solid fa-calculator"></i>算力预算生成器</a>
+      <a href="#/lightyear/wallet"><i class="fa-solid fa-wallet"></i>光年算力钱包</a><a href="#/lightyear/predict"><i class="fa-solid fa-wand-magic-sparkles"></i>光年预测器</a><a href="#/estimator"><i class="fa-solid fa-calculator"></i>算力预算生成器</a>
       <a href="#/verify"><i class="fa-solid fa-certificate"></i>证书验真</a>
       ${u ? `<a href="javascript:void 0" id="drawer-logout"><i class="fa-solid fa-right-from-bracket"></i>退出登录</a>` : `<a href="#/login"><i class="fa-solid fa-right-to-bracket"></i>登录 / 入驻</a>`}`
     $('#drawer-close').onclick = closeDrawer
@@ -107,7 +108,7 @@
       <div><div class="brand" style="margin-bottom:12px"><span class="brand-mark"><i class="fa-solid fa-film"></i></span><span class="brand-text"><b>迭代影交汇</b><small>ITERATION FILM HUB</small></span></div>
         <p class="small muted" style="max-width:380px">以盛典发现价值，以孵化推动制作，以交易连接全渠道发行。<br>迭代盛典 × 捷成世纪｜影视创作、颁奖、交易与全渠道发行协作平台（工作名）。</p></div>
       <div><h4>业务线</h4><a href="#/festival">迭代盛典</a><a href="#/incubate">迭代影创</a><a href="#/market">迭代影市</a><a href="#/distribution">发行中心</a></div>
-      <div><h4>服务</h4><a href="#/estimator">算力预算生成器</a><a href="#/verify">证书验真</a><a href="#/events">路演活动</a><a href="#/academy">学院与资源</a></div>
+      <div><h4>服务</h4><a href="#/lightyear">光年算力计划</a><a href="#/lightyear/predict">光年预测器</a><a href="#/estimator">算力预算生成器</a><a href="#/verify">证书验真</a><a href="#/events">路演活动</a><a href="#/academy">学院与资源</a></div>
       <div><h4>规则与信任</h4><a href="#/rules">平台边界与规则</a><a href="#/academy">行业数据来源</a><a href="#/login">机构入驻</a></div>
     </div><div class="hr"></div>
     <p class="xs dim">名称与子品牌均为工作方案，不代表已注册商标或已获联名授权。专业评奖、资源投决、交易采购三套决策独立；平台提供撮合与流程支持，不提供公众募资、保收益或资金托管。演示数据均已标注。© 2026 迭代影交汇</p></div>`

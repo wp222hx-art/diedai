@@ -72,4 +72,20 @@ python3 -c 'import json;d=json.load(open("/tmp/r.json"));print("    ↳",[ (s["i
 check "    财务审批" $(req POST /settlements/1/approve $F) 200
 check "AT08(估算) 基准4050元" $(req POST /estimates $C '{"shots":[{"name":"a","seconds":3600,"adopt":5,"k":2,"p":0.4,"r":0.2,"billSec":5,"price":0.3}],"scenarios":{"low":{"all":{"p":0.6,"r":0.1,"price":0.2}},"high":{"all":{"p":0.25,"r":0.35,"price":0.5}}}}') 200
 python3 -c 'import json;d=json.load(open("/tmp/r.json"));print("    ↳ 低/基/高 =",d["low"]["cost"],d["base"]["cost"],d["high"]["cost"],"（期望 1886 / 4050 / 11110）")'
+
+# ===== 光年计划 =====
+check "LY01 未完成任务不可领取" $(req POST /lightyear/claim $C '{"code":"predict"}') 409
+check "LY02 已完成挂牌任务领取" $(req POST /lightyear/claim $C '{"code":"listing"}') 200
+check "LY03 重复领取被拒" $(req POST /lightyear/claim $C '{"code":"listing"}') 409
+check "LY04 匿名可预测（不入库）" $(req POST /lightyear/predict "" '{"form":"series","style":"oriental","minutes":60,"model":"mix"}') 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));print("    ↳ 基准",d["base"]["std"],"标准Token ¥",d["base"]["cost"],"周期",d["totalWeeks"],"周")'
+check "LY05 登录预测入库" $(req POST /lightyear/predict $C '{"asset_id":1,"form":"series","style":"realistic","minutes":96,"model":"mix"}') 200
+PID=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["prediction_id"])')
+check "LY06 不满足条件的星级被拒(光年)" $(req POST /lightyear/apply $C "{\"asset_id\":1,\"tier\":\"光年\",\"prediction_id\":$PID}") 409
+check "LY07 获奖作品申请星耀" $(req POST /lightyear/apply $C "{\"asset_id\":1,\"tier\":\"星耀\",\"prediction_id\":$PID}") 200
+check "LY08 机构不能领取创作者算力" $(req POST /lightyear/claim $O '{"code":"join"}') 403
+check "LY09 生成登记幂等" $(req POST /lightyear/usage $C '{"model":"2.5","resolution":"720p","seconds":30,"request_id":"ly-r1"}') 200
+check "    重复请求不重复扣减" $(req POST /lightyear/usage $C '{"model":"2.5","resolution":"720p","seconds":30,"request_id":"ly-r1"}') 200
+check "LY10 2.0 单段超15秒被拒" $(req POST /lightyear/usage $C '{"model":"2.0","resolution":"720p","seconds":20,"request_id":"ly-r2"}') 422
+
 echo; echo "通过 $pass，失败 $fail"

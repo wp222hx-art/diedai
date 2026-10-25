@@ -15,6 +15,17 @@
 | 运营治理 M11/M13/M14 | 活动预约、挂牌审核（未清权不可发布）、专家分派、工单队列、审计日志、事件 Outbox |
 | 前端 | 影视风格（暗场黑＋放映金、胶片条、海报卡、证书），**移动端优先**：底部 Tab、抽屉导航、表格转卡片、底部弹出表单、安全区适配 |
 
+## ✨ 光年计划（5000万元 Seedance 影视算力共享）
+- **活动页** `/#/lightyear`：5000万元计数动画、四级星阶（星火→星耀→星河→光年）、星火任务、五池分配环形图、光年公式、实时点亮、双模型说明；首页新增竖版海报区块与顶部光带入口
+- **光年预测器** `/#/lightyear/predict`：输入形态/风格/片长/覆盖率/模型策略（2.0、2.5、智能混合）/分辨率/镜头构成/团队经验/k/操作员/参考视频比例 → 输出三场景标准Token与刊例价、制作周期甘特图、补贴覆盖、风格建议、分镜头类明细
+- **光年算力钱包** `/#/lightyear/wallet`：余额与等级、任务领取（领取动效）、凭预测申请定向额度、生成登记扣减、流水；运营账号进入即为审批台
+- **光年公式 LY-1.0**：`T = Σ Eⱼ × Mⱼ × O × (1+i) × W·H·24/1024 × 1.08`，`Mⱼ = k/qⱼ × (1+r)`，`qⱼ = 1−(1−pⱼ)^k`，`pⱼ = p₀ⱼ × 风格 × 团队 × 模型`
+  - Token 口径取自火山引擎公开公式（宽×高×帧率×时长/1024）；刊例价：Seedance 2.0 ¥46/¥28、Seedance 2.5 ¥70/¥42 每百万tokens（不含/含视频输入）
+  - 标准Token = 折算到 Seedance 2.0 ¥46/百万 的等值量；5000万元 ≈ 1.087 万亿标准Token
+  - 五池：普惠入驻 400万 · 入选扶持 2250万 · 孵化里程碑 1500万 · 盛典荣誉 500万 · 风险机动 350万（元）
+- **规则**：星火任务合计最高 3000 万标准Token；星耀=预测基准×60%（上限3亿）；星河=80%（上限10亿）；光年=100%（上限50亿）；荣誉加成 1 亿/奖项。资金池原子扣减、领取唯一约束、生成请求幂等、2.0单段≤15秒/2.5≤30秒
+- API：`GET /lightyear/overview`、`POST /lightyear/predict`、`GET /lightyear/me`、`POST /lightyear/claim`、`POST /lightyear/apply`、`GET /lightyear/admin`、`POST /lightyear/grants/:id/decide`、`POST /lightyear/usage`
+
 ## 访问路径
 前端（Hash 路由）：`/#/` 首页 · `/#/festival` 盛典（赛道/流程/荣誉库/专家网络/日历）· `/#/incubate` 影创 · `/#/estimator` 算力估算 · `/#/market` 影市 · `/#/listing/:id` 挂牌详情 · `/#/distribution` 发行中心（渠道/流程/交付/模式/分账）· `/#/events` · `/#/academy` · `/#/verify/:code` 证书验真 · `/#/rules` · `/#/login` · `/#/workbench/:section` 工作台
 
@@ -38,7 +49,7 @@ creator@demo.cn（创作者）· creator2@demo.cn · expert@demo.cn / expert2 / 
 npm run build
 npm run db:reset           # 迁移 + 种子数据
 pm2 start ecosystem.config.cjs
-bash tests/acceptance.sh   # 44 项验收用例（会改动数据，跑完可再 db:reset）
+bash tests/acceptance.sh   # 55 项验收用例（含光年计划 LY01—LY10）（会改动数据，跑完可再 db:reset）
 ```
 种子数据由 `python3 scripts/gen_seed.py > seed.sql` 生成。
 

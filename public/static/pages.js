@@ -4,7 +4,7 @@
 
   // ================= P01 首页 =================
   R[''] = async (app) => {
-    const d = await api('/home')
+    const [d, ov] = await Promise.all([api('/home'), api('/lightyear/overview').catch(() => null)])
     const ed = d.edition, st = d.stats || {}
     const days = ed ? Math.max(0, Math.ceil((new Date(ed.close_at) - new Date()) / 864e5)) : 0
     app.innerHTML = `
@@ -12,11 +12,13 @@
       <div class="hero-badges"><span class="tag gold"><i class="fa-solid fa-star"></i> 迭代盛典 × 捷成世纪</span><span class="tag">AIGC影视 · 短剧 · 动漫</span><span class="tag">中剧及以上</span></div>
       <h1 class="h1">让好故事<em>被看见</em><br>让好作品<em>走向市场</em></h1>
       <p class="lead">不做另一个投稿网站——做把好故事变成<b class="gold">可评估、可投、可制作、可发行</b>项目的协作基础设施。一套作品档案，贯通盛典、孵化、交易与全渠道发行。</p>
+      <a class="ly-hero-ribbon" href="#/lightyear"><i class="fa-solid fa-meteor"></i> 光年计划：5000万元 Seedance 影视算力免费共享 <i class="fa-solid fa-arrow-right"></i></a>
       <div class="row"><a class="btn btn-gold" href="#/festival"><i class="fa-solid fa-trophy"></i>报名迭代盛典</a><a class="btn" href="#/market"><i class="fa-solid fa-handshake"></i>进入迭代影市</a></div>
       ${ed ? `<div class="edition-card"><div><div class="xs gold">当前届次 · ${esc(ed.status)}</div><b>${esc(ed.name)}</b><div class="xs muted">报名截止 ${esc(ed.close_at)} · 典礼 ${esc(ed.ceremony_at)}</div></div><div style="text-align:center;padding-left:16px;border-left:1px solid var(--line2)"><div class="count">${days}</div><div class="xs muted">天后截止</div></div></div>` : ''}
     </div></div></section>
     <div class="filmstrip" aria-hidden="true"></div>
 
+    ${ov ? lightyearPoster(ov) : ''}
     <section class="section" id="stats-section"><div class="wrap">
       <div class="stats">
         ${[[st.assets, '作品档案'], [st.entries, '盛典报名'], [st.listings, '影市挂牌'], [st.projects, '孵化项目'], [st.channels, '发行渠道档案'], [st.experts, '公开专家网络']].map(([n, l]) => `<div class="stat"><b>${n ?? 0}</b><span>${l}</span></div>`).join('')}
@@ -136,7 +138,7 @@
   // ================= 迭代影创 =================
   R.incubate = async (app) => {
     app.innerHTML = pageHero('JIEDAI STUDIO · 孵化品牌', '迭代影创 <span class="gold">·</span> 让好故事成为可交付作品', '项目筛选、预算与里程碑、受限资源授予。扶持与投资分开：算力券不是现金，入围不是获投。',
-      `<div class="row" style="margin-top:18px"><a class="btn btn-gold" href="#/workbench?go=asset"><i class="fa-solid fa-plus"></i>创建项目提报</a><a class="btn" href="#/estimator"><i class="fa-solid fa-calculator"></i>算力预算生成器</a></div>`) +
+      `<div class="row" style="margin-top:18px"><a class="btn btn-gold" href="#/workbench?go=asset"><i class="fa-solid fa-plus"></i>创建项目提报</a><a class="btn" href="#/lightyear/predict"><i class="fa-solid fa-wand-magic-sparkles"></i>光年预测器</a><a class="btn" href="#/lightyear"><i class="fa-solid fa-meteor"></i>免费算力</a></div>`) +
       `<div class="wrap section" style="padding-top:28px">
       <div class="section-head"><div><div class="eyebrow">SUPPORT PACKAGES</div><h2 class="h2">三级扶持包 · 以里程碑兑现</h2></div></div>
       <div class="cards c3">${[['试制包', 'fa-seedling', '材料齐备、权利初筛通过、技术可验证', '基础教程、导师诊断、少量试制资源', '按镜头测试释放；失败可复盘退出'], ['孵化包', 'fa-rocket', '综合评审通过、项目计划及责任人明确', '专项算力、制作指导、机构对接', '按概念验证、样章、阶段交付分批'], ['联合开发包', 'fa-gem', '尽调与投决通过、正式合同签署', '合同约定的资金、算力、授权及发行支持', '与验收证据、预算使用率联动']].map(([t, i, a, b, c]) => `<div class="card hover line-card"><div class="ico"><i class="fa-solid ${i}"></i></div><div class="h3">${t}</div><div class="stack small" style="margin-top:12px"><div><span class="xs gold">准入条件</span><div class="muted">${a}</div></div><div><span class="xs gold">资源内容</span><div class="muted">${b}</div></div><div><span class="xs gold">放券规则</span><div class="muted">${c}</div></div></div></div>`).join('')}</div>
@@ -363,7 +365,7 @@
     const reg = q.mode === 'register'
     const demo = [['creator@demo.cn', '创作者 林深', 'fa-pen-nib'], ['expert@demo.cn', '评审专家A', 'fa-user-tie'], ['org@demo.cn', '认证机构', 'fa-building'], ['dist@demo.cn', '发行运营', 'fa-satellite-dish'], ['ops@demo.cn', '联合运营', 'fa-shield-halved'], ['finance@demo.cn', '财务复核', 'fa-coins']]
     app.innerHTML = `<div class="wrap section"><div class="cards c2" style="max-width:980px;margin:0 auto;align-items:start">
-      <div class="card" style="padding:28px"><div class="eyebrow">${reg ? 'JOIN' : 'SIGN IN'}</div><h1 class="h2">${reg ? '入驻迭代影交汇' : '登录工作台'}</h1>
+      <div class="card" style="padding:28px"><div class="eyebrow">${reg ? 'JOIN' : 'SIGN IN'}</div><h1 class="h2">${reg ? '入驻迭代影交汇' : '登录工作台'}</h1>${reg ? '<a class="ly-hero-ribbon" style="margin:12px 0 0" href="#/lightyear"><i class="fa-solid fa-fire"></i> 入驻并建档即点亮「星火」，领取免费 Seedance 算力</a>' : ''}
         <form id="auth-form" style="margin-top:18px">
           ${reg ? `<div class="field"><label>身份</label><div class="row"><label class="check"><input type="radio" name="role" value="creator" ${q.role !== 'institution' ? 'checked' : ''}> 创作者/团队</label><label class="check"><input type="radio" name="role" value="institution" ${q.role === 'institution' ? 'checked' : ''}> 机构（投资/采购/发行）</label></div><div class="hint">专家与运营账号由平台邀请开通。机构提交后需核验资质。</div></div>
           <div class="field"><label>姓名<em>*</em></label><input class="input" name="name" required></div><div class="field"><label>院校/机构</label><input class="input" name="org"></div>` : ''}

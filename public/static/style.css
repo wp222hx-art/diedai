@@ -359,3 +359,145 @@ table.tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
 .cards.split{grid-template-columns:1.4fr 1fr;align-items:start}
 .sticky-card{position:sticky;top:80px}
 @media (max-width:900px){.cards.split{grid-template-columns:1fr}.sticky-card{position:static}}
+
+/* ==========================================================
+   光年计划 Light-Year Program
+   ========================================================== */
+.ly-grad{background:linear-gradient(120deg,#f0cf86,#d4a94f 45%,#c3adf5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ly-chip{display:inline-flex;align-items:center;padding:5px 12px;border-radius:30px;font-size:12px;letter-spacing:1px;background:linear-gradient(135deg,rgba(240,207,134,.95),rgba(212,169,79,.9));color:#1a1408;font-weight:700}
+.ly-chip.ghost{background:rgba(255,255,255,.06);color:#e9e2cf;border:1px solid rgba(240,207,134,.45);font-weight:500}
+/* home poster */
+.ly-poster-sec{padding:56px 0 10px}
+.ly-poster{display:grid;grid-template-columns:minmax(0,440px) 1fr;gap:40px;align-items:center;padding:26px;border-radius:24px;position:relative;overflow:hidden;
+  background:radial-gradient(800px 400px at 0% 0%,rgba(212,169,79,.14),transparent 60%),radial-gradient(600px 400px at 100% 100%,rgba(155,123,224,.12),transparent 60%),linear-gradient(180deg,#121119,#0c0c11);border:1px solid rgba(212,169,79,.35)}
+.ly-poster-art{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:3/4;box-shadow:0 30px 80px -30px rgba(212,169,79,.45),0 0 0 1px rgba(240,207,134,.3);transform:perspective(1200px) rotateY(4deg);transition:.5s}
+.ly-poster-art:hover{transform:perspective(1200px) rotateY(0)}
+.ly-poster-art img{width:100%;height:100%;object-fit:cover}
+.ly-poster-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:20px;background:linear-gradient(180deg,rgba(5,5,10,.55),transparent 28%,transparent 48%,rgba(5,5,10,.92) 82%)}
+.ly-poster-top{display:flex;gap:6px;flex-wrap:wrap}
+.ly-poster-kicker{font-size:11px;letter-spacing:4px;color:#f0cf86}
+.ly-poster-big{display:flex;align-items:baseline;gap:6px;line-height:1;margin:6px 0}
+.ly-num{font-family:var(--serif);font-size:clamp(64px,9vw,96px);font-weight:900;background:linear-gradient(180deg,#fff6dc,#f0cf86 45%,#b5852e);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 24px rgba(240,207,134,.45))}
+.ly-unit{font-family:var(--serif);font-size:26px;color:#f0cf86}
+.ly-poster-title{font-family:var(--serif);font-size:22px;letter-spacing:3px}
+.ly-poster-sub{font-size:13px;color:#cfc6b0;margin-top:6px;letter-spacing:2px}
+.ly-shine{position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,240,200,.18) 50%,transparent 60%);transform:translateX(-100%);animation:shine 5s ease-in-out infinite}
+@keyframes shine{60%,100%{transform:translateX(100%)}}
+.ly-mini-tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ly-mini{padding:12px 10px;border-radius:12px;border:1px solid color-mix(in srgb,var(--c) 45%,transparent);background:color-mix(in srgb,var(--c) 8%,transparent);text-align:center}
+.ly-mini i{color:var(--c);font-size:18px}.ly-mini b{display:block;margin:4px 0 2px;color:var(--c)}.ly-mini span{font-size:11px;color:var(--muted);line-height:1.4;display:block}
+.ly-meter{margin-top:16px}
+/* hero */
+.ly-hero{position:relative;overflow:hidden;padding:90px 0 110px;border-bottom:1px solid var(--line)}
+.ly-hero-sm{padding:56px 0 46px}
+.ly-hero-bg{position:absolute;inset:0;background:url(/static/img/lightyear-banner.jpg) right center/cover no-repeat;opacity:.85}
+.ly-hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--bg) 10%,rgba(11,11,15,.75) 45%,rgba(11,11,15,.1) 80%),linear-gradient(0deg,var(--bg),transparent 40%)}
+.ly-stars{position:absolute;inset:0;z-index:1;background-image:radial-gradient(1px 1px at 20% 30%,#fff8,transparent),radial-gradient(1px 1px at 60% 70%,#fff6,transparent),radial-gradient(1.5px 1.5px at 80% 20%,#f0cf86,transparent),radial-gradient(1px 1px at 35% 80%,#fff5,transparent);animation:twinkle 4s ease-in-out infinite alternate}
+@keyframes twinkle{to{opacity:.4}}
+.ly-hero .wrap{position:relative;z-index:2}
+.ly-hero-copy{max-width:680px}
+.ly-kicker{font-size:12px;letter-spacing:5px;color:#f0cf86;margin-bottom:6px}
+.ly-h1{font-family:var(--mono);font-size:clamp(46px,8.5vw,104px);line-height:1;font-weight:800;letter-spacing:-2px;background:linear-gradient(180deg,#fffaf0,#f0cf86 50%,#b98a33);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 30px rgba(240,207,134,.35))}
+.ly-h1 small{font-family:var(--serif);font-size:.36em;letter-spacing:0;margin-left:6px}
+.ly-h1-sub{font-family:var(--serif);font-size:clamp(18px,2.4vw,26px);letter-spacing:2px;margin-top:10px}
+.ly-dash{display:grid;grid-template-columns:repeat(4,1fr);border-radius:18px;overflow:hidden;border:1px solid rgba(212,169,79,.4);background:rgba(18,16,12,.85);backdrop-filter:blur(12px);box-shadow:var(--shadow)}
+.ly-dash>div{padding:20px;border-right:1px solid var(--line);position:relative}
+.ly-dash>div:last-child{border-right:0}
+.ly-dash i{color:var(--gold);opacity:.6;position:absolute;right:16px;top:18px}
+.ly-dash b{display:block;font-family:var(--mono);font-size:26px;color:var(--gold2)}
+.ly-dash span{font-size:12px;color:var(--muted)}
+/* tiers */
+.ly-tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.ly-tier{position:relative;padding:24px 20px;border-radius:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--c) 40%,transparent);
+  background:radial-gradient(260px 160px at 100% 0,color-mix(in srgb,var(--c) 18%,transparent),transparent 70%),linear-gradient(180deg,var(--panel),var(--bg2));transition:.3s}
+.ly-tier:hover{transform:translateY(-4px);box-shadow:0 20px 50px -20px color-mix(in srgb,var(--c) 50%,transparent)}
+.ly-tier-no{position:absolute;right:14px;top:6px;font-family:var(--serif);font-size:58px;opacity:.08}
+.ly-tier-ico{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#111;background:var(--c);box-shadow:0 0 30px color-mix(in srgb,var(--c) 60%,transparent)}
+.ly-tier-en{font-size:10px;letter-spacing:4px;color:var(--c);margin-top:16px}
+.ly-tier h3{font-family:var(--serif);font-size:28px;margin:2px 0 10px}
+.ly-tier-cond{font-size:12px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.04);color:#ddd;margin-bottom:10px}
+.ly-tier-cond i{color:var(--c)}
+.ly-tier p{font-size:13px;color:var(--muted)}
+/* tasks */
+.ly-task{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;background:rgba(255,255,255,.015)}
+.ly-task>i{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(230,162,60,.12);color:#e6a23c;flex-shrink:0}
+.ly-task.done{opacity:.6}
+.ly-bucket{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ly-bucket .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.ly-donut-wrap{display:flex;justify-content:center;margin:16px 0}
+.ly-donut{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;box-shadow:0 0 50px -10px rgba(212,169,79,.5)}
+.ly-donut>div{width:112px;height:112px;border-radius:50%;background:var(--panel);display:grid;place-items:center;align-content:center}
+.ly-donut b{font-family:var(--mono);font-size:28px;color:var(--gold2);line-height:1}.ly-donut span{font-size:12px;color:var(--muted)}
+/* formula */
+.ly-formula-card{padding:30px;border-radius:22px;border:1px solid rgba(155,123,224,.35);background:radial-gradient(600px 300px at 100% 0,rgba(155,123,224,.14),transparent 60%),radial-gradient(500px 300px at 0 100%,rgba(212,169,79,.1),transparent 60%),var(--bg2)}
+.ly-formula{margin-top:16px;padding:20px;border-radius:14px;background:#08080c;border:1px solid var(--line);font-family:var(--mono);overflow:auto}
+.ly-f-main{font-size:clamp(14px,2vw,22px);color:#fff;white-space:nowrap}
+.ly-f-row{display:flex;gap:26px;flex-wrap:wrap;margin-top:12px;font-size:14px;color:#c3adf5}
+.ly-var{padding:14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.ly-feed{max-height:320px;overflow:auto}
+.ly-feed-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.ly-model{padding:12px;border-radius:12px;border:1px solid var(--line);margin-bottom:10px}
+/* predictor */
+.ly-range{width:100%;accent-color:var(--gold);height:28px}
+.ly-seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.ly-seg button{flex:1;padding:10px 6px;border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;min-height:42px}
+.ly-seg button.on{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#16120a;font-weight:700}
+.ly-mix{display:grid;grid-template-columns:76px 1fr 44px;gap:10px;align-items:center;font-size:13px}
+.ly-mix b{text-align:right;color:var(--gold2);font-size:12px}
+.ly-empty-pred{text-align:center;padding:60px 20px;color:var(--muted)}.ly-empty-pred i{font-size:40px;color:var(--gold-d);margin-bottom:12px}
+.ly-result-hero{text-align:center;background:radial-gradient(400px 200px at 50% 0,rgba(240,207,134,.16),transparent 70%),var(--panel)}
+.ly-result-big{font-family:var(--mono);font-size:clamp(38px,6vw,58px);font-weight:800;color:var(--gold2);line-height:1.15;margin:4px 0 10px;text-shadow:0 0 30px rgba(240,207,134,.3)}
+.ly-gantt{margin:14px 0 10px}
+.ly-g-row{display:grid;grid-template-columns:150px 1fr 48px;gap:10px;align-items:center;padding:6px 0}
+.ly-g-track{height:12px;border-radius:12px;background:#1d1d27;position:relative;overflow:hidden}
+.ly-g-track i{position:absolute;top:0;bottom:0;border-radius:12px}
+.ly-cover{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.ly-cover-item{padding:12px;border-radius:12px;border:1px solid color-mix(in srgb,var(--c) 40%,transparent);background:color-mix(in srgb,var(--c) 6%,transparent)}
+.ly-cover-item b{color:var(--c)}
+.ly-cover-amt{font-family:var(--mono);font-size:20px;color:#fff;margin-top:4px}
+/* wallet */
+.ly-wallet{position:relative;overflow:hidden;padding:26px;border-radius:22px;border:1px solid color-mix(in srgb,var(--c) 50%,transparent);
+  background:radial-gradient(500px 260px at 100% 0,color-mix(in srgb,var(--c) 26%,transparent),transparent 70%),linear-gradient(135deg,#17141c,#0c0c12)}
+.ly-wallet-bg{position:absolute;inset:0;background:url(/static/img/lightyear-banner-m.jpg) right center/cover;opacity:.22;mix-blend-mode:screen}
+.ly-wallet-big{position:relative;margin:18px 0 14px}
+.ly-wallet-big span{font-family:var(--mono);font-size:clamp(40px,7vw,64px);font-weight:800;color:#fff;text-shadow:0 0 30px color-mix(in srgb,var(--c) 60%,transparent)}
+.ly-wallet-big small{display:block;font-size:13px;color:var(--muted)}
+.ly-level{display:inline-flex;gap:6px;align-items:center;padding:4px 12px;border-radius:20px;background:var(--c);color:#111;font-weight:700;font-size:13px}
+.ly-apply{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ly-flow{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ly-celebrate{position:fixed;inset:0;z-index:400;display:grid;place-items:center;pointer-events:none;background:radial-gradient(circle,rgba(240,207,134,.18),transparent 60%);animation:fadein .2s}
+.ly-burst{position:absolute}
+.ly-burst i{position:absolute;width:6px;height:6px;border-radius:50%;background:#f0cf86;box-shadow:0 0 10px #f0cf86;animation:burst 1.2s ease-out forwards;transform:rotate(var(--a)) translateY(0)}
+@keyframes burst{to{transform:rotate(var(--a)) translateY(calc(var(--d) * -1));opacity:0}}
+.ly-cel-txt{text-align:center;animation:pop .4s ease}
+.ly-cel-txt i{font-size:42px;color:#f0cf86}
+.ly-cel-txt b{display:block;font-family:var(--mono);font-size:44px;color:#fff;text-shadow:0 0 30px #f0cf86}
+.ly-cel-txt span{color:#f0cf86;letter-spacing:2px}
+.nav-hot{position:relative}
+.nav-hot::before{content:"HOT";position:absolute;top:-2px;right:-4px;font-size:8px;padding:1px 4px;border-radius:4px;background:var(--red2);color:#fff;letter-spacing:.5px}
+@media (max-width:1100px){.ly-tiers{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){
+  .ly-poster{grid-template-columns:1fr;gap:22px;padding:16px}
+  .ly-poster-art{transform:none;max-width:460px;margin:0 auto;width:100%}
+  .ly-dash{grid-template-columns:repeat(2,1fr)}
+  .ly-dash>div:nth-child(2){border-right:0}.ly-dash>div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+}
+@media (max-width:640px){
+  .ly-poster-sec{padding:30px 0 0}
+  .ly-mini-tiers{grid-template-columns:repeat(2,1fr)}
+  .ly-tiers{grid-template-columns:1fr}
+  .ly-hero{padding:56px 0 90px}
+  .ly-hero-bg{background-image:url(/static/img/lightyear-banner-m.jpg);background-position:70% center;opacity:.55}
+  .ly-hero::before{background:linear-gradient(0deg,var(--bg) 20%,rgba(11,11,15,.55))}
+  .ly-hero .row .btn{flex:1}
+  .ly-dash b{font-size:20px}.ly-dash>div{padding:14px}
+  .ly-cover{grid-template-columns:1fr}
+  .ly-g-row{grid-template-columns:96px 1fr 40px}
+  .ly-formula-card{padding:18px}
+  .ly-f-row{flex-direction:column;gap:6px}
+  .ly-wallet{padding:18px}
+}
+.ly-hero-ribbon{display:inline-flex;align-items:center;gap:8px;margin:-6px 0 18px;padding:8px 14px;border-radius:30px;font-size:13px;color:#f7e6bd;
+  background:linear-gradient(90deg,rgba(212,169,79,.22),rgba(155,123,224,.18));border:1px solid rgba(240,207,134,.45);box-shadow:0 0 24px -6px rgba(240,207,134,.5);animation:glow 2.6s ease-in-out infinite alternate}
+.ly-hero-ribbon i:first-child{color:#f0cf86}
+@keyframes glow{to{box-shadow:0 0 34px -2px rgba(240,207,134,.6)}}
