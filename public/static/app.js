@@ -61,37 +61,35 @@
 
   // ---------- 导航 ----------
   const NAV = [
-    ['#/', '发现', 'fa-compass'],
-    ['#/festival', '迭代盛典', 'fa-trophy'],
-    ['#/incubate', '迭代影创', 'fa-clapperboard'],
-    ['#/lightyear', '算力扶持', 'fa-microchip'],
-    ['#/market', '迭代影市', 'fa-handshake'],
-    ['#/distribution', '发行中心', 'fa-satellite-dish'],
-    ['#/events', '路演活动', 'fa-calendar-star'],
-    ['#/academy', '学院与资源', 'fa-graduation-cap'],
+    ['#/', '光年计划', 'fa-film'],
+    ['#/board', '初选榜', 'fa-ranking-star'],
+    ['#/jury', '评审导师', 'fa-user-tie'],
+    ['#/support', '配套支持', 'fa-toolbox'],
+    ['#/export', '出海交易', 'fa-earth-asia'],
   ]
+  const ALIAS = { '#/vote': '#/board', '#/lightyear': '#/support', '#/market': '#/export', '#/distribution': '#/export', '#/listing': '#/export', '#/apply': '#/' }
   function renderChrome() {
     const h = location.hash || '#/'
-    const base = '#/' + (h.slice(2).split('/')[0] || '')
+    const raw = '#/' + (h.slice(2).split('?')[0].split('/')[0] || ''), base = ALIAS[raw] || raw
     $('#main-nav').innerHTML = NAV.map(([href, label]) => `<a href="${href}" class="${base === href ? 'active' : ''}">${label}</a>`).join('')
     const u = S.user
     $('#top-actions').innerHTML = u
-      ? `<a class="btn btn-gold btn-sm btn-login-text" href="#/workbench"><i class="fa-solid fa-briefcase"></i>我的工作台</a>
+      ? `<a class="btn btn-gold btn-sm btn-login-text" href="#/apply">报名</a>
          <div class="user-chip" id="user-chip"><span class="avatar">${esc(u.name[0])}</span><div><small>${esc(u.role_label || '')}</small><span>${esc(u.name)}</span></div></div>`
-      : `<a class="btn btn-sm btn-ghost btn-login-text" href="#/login">登录</a><a class="btn btn-gold btn-sm" href="#/login?mode=register">入驻平台</a>`
+      : `<a class="btn btn-sm btn-ghost btn-login-text" href="#/login">登录</a><a class="btn btn-gold btn-sm" href="#/login?mode=register&next=%23%2Fapply">立即报名</a>`
     const chip = $('#user-chip')
     if (chip) chip.onclick = () => modal('账户', `<div class="stack"><div class="row"><span class="avatar" style="width:46px;height:46px;font-size:18px">${esc(u.name[0])}</span><div><b>${esc(u.name)}</b><div class="xs muted">${esc(u.email || '')}</div><div class="xs gold">${esc(u.role_label)} · ${esc(u.org || '')}</div></div></div>
-      <a class="btn btn-block" href="#/workbench" data-close><i class="fa-solid fa-briefcase"></i>进入我的工作台</a><button class="btn btn-block btn-ghost" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>退出登录</button></div>`,
+      <a class="btn btn-block" href="#/me" data-close>我的报名与算力</a><a class="btn btn-block" href="#/workbench" data-close>创作 / 业务工作台</a><button class="btn btn-block btn-ghost" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>退出登录</button></div>`,
       (m) => ($('#logout-btn', m).onclick = () => { closeModal(); logout() }))
 
-    const tabs = [['#/', '发现', 'fa-compass'], ['#/festival', '盛典', 'fa-trophy'], ['#/workbench', '工作台', 'fa-plus', 'center'], ['#/lightyear', '算力', 'fa-microchip'], ['#/market', '影市', 'fa-handshake']]
-    $('#tabbar').innerHTML = tabs.map(([href, l, i, cls]) => `<a href="${href}" class="${cls || ''} ${base === href ? 'active' : ''}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')
+    const tabs = [['#/', '计划', 'fa-film'], ['#/board', '初选榜', 'fa-ranking-star'], ['#/apply', '报名', 'fa-plus', 'center'], ['#/jury', '评审', 'fa-user-tie'], ['#/me', '我的', 'fa-user']]
+    $('#tabbar').innerHTML = tabs.map(([href, l, i, cls]) => `<a href="${href}" class="${cls || ''} ${(raw === href || (href !== '#/apply' && base === href)) ? 'active' : ''}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')
 
     $('#drawer').innerHTML = `<div class="between" style="margin-bottom:10px"><b class="gold" style="font-family:var(--serif);font-size:18px">导航</b><button class="icon-btn" style="display:grid" id="drawer-close"><i class="fa-solid fa-xmark"></i></button></div>
       ${NAV.map(([href, l, i]) => `<a href="${href}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')}
-      <a href="#/workbench"><i class="fa-solid fa-briefcase"></i>我的工作台</a>
-      <a href="#/lightyear/wallet"><i class="fa-solid fa-wallet"></i>我的算力账户</a><a href="#/lightyear/predict"><i class="fa-solid fa-chart-line"></i>算力与周期预测</a><a href="#/estimator"><i class="fa-solid fa-calculator"></i>算力预算生成器</a>
-      <a href="#/verify"><i class="fa-solid fa-certificate"></i>证书验真</a>
+      <a href="#/apply"><i class="fa-solid fa-plus"></i>立即报名</a><a href="#/me"><i class="fa-solid fa-user"></i>我的报名与算力</a>
+      <div class="xs dim" style="padding:16px 10px 6px;letter-spacing:.2em">更多</div>
+      <a href="#/support/predict"><i class="fa-solid fa-chart-line"></i>算力与周期测算</a><a href="#/workbench"><i class="fa-solid fa-briefcase"></i>工作台</a><a href="#/festival"><i class="fa-solid fa-trophy"></i>迭代盛典</a><a href="#/academy"><i class="fa-solid fa-book"></i>行业洞察</a><a href="#/rules"><i class="fa-solid fa-scale-balanced"></i>规则与边界</a>
       ${u ? `<a href="javascript:void 0" id="drawer-logout"><i class="fa-solid fa-right-from-bracket"></i>退出登录</a>` : `<a href="#/login"><i class="fa-solid fa-right-to-bracket"></i>登录 / 入驻</a>`}`
     $('#drawer-close').onclick = closeDrawer
     const dl = $('#drawer-logout'); if (dl) dl.onclick = () => { closeDrawer(); logout() }
@@ -105,14 +103,15 @@
 
   function renderFooter() {
     $('#site-footer').innerHTML = `<div class="wrap"><div class="cols">
-      <div><div class="brand" style="margin-bottom:12px"><span class="brand-mark"><i class="fa-solid fa-film"></i></span><span class="brand-text"><b>迭代影交汇</b><small>ITERATION FILM HUB</small></span></div>
-        <p class="small muted" style="max-width:380px">以盛典发现价值，以孵化推动制作，以交易连接全渠道发行。<br>迭代盛典 × 捷成世纪｜影视创作、颁奖、交易与全渠道发行协作平台（工作名）。</p></div>
-      <div><h4>业务线</h4><a href="#/festival">迭代盛典</a><a href="#/incubate">迭代影创</a><a href="#/market">迭代影市</a><a href="#/distribution">发行中心</a></div>
-      <div><h4>服务</h4><a href="#/lightyear">光年计划 · 算力扶持</a><a href="#/lightyear/predict">算力与周期预测</a><a href="#/estimator">算力预算生成器</a><a href="#/verify">证书验真</a><a href="#/events">路演活动</a><a href="#/academy">学院与资源</a></div>
-      <div><h4>规则与信任</h4><a href="#/rules">平台边界与规则</a><a href="#/academy">行业数据来源</a><a href="#/login">机构入驻</a></div>
+      <div><div class="brand" style="margin-bottom:12px"><span class="brand-mark"><i class="fa-solid fa-film"></i></span><span class="brand-text"><b>光年计划</b><small>ITERATION × JC</small></span></div>
+        <p class="small muted" style="max-width:380px">迭代 × 捷成世纪 AI 影视扶持计划：免费算力、完片孵化、发行支持。面向 AI 专业电影团队与影视院校毕业生。</p></div>
+      <div><h4>计划</h4><a href="#/apply">报名</a><a href="#/board">初选榜</a><a href="#/jury">评审与导师</a></div>
+      <div><h4>支持</h4><a href="#/support">专家支持</a><a href="#/support/likeness">肖像授权</a><a href="#/support/predict">算力测算</a><a href="#/export">出海与交易</a></div>
+      <div><h4>平台</h4><a href="#/workbench">工作台</a><a href="#/festival">迭代盛典</a><a href="#/academy">行业洞察</a><a href="#/rules">规则与边界</a></div>
     </div><div class="hr"></div>
-    <p class="xs dim">名称与子品牌均为工作方案，不代表已注册商标或已获联名授权。专业评奖、资源投决、交易采购三套决策独立；平台提供撮合与流程支持，不提供公众募资、保收益或资金托管。演示数据均已标注。© 2026 迭代影交汇</p></div>`
+    <p class="xs dim">“光年计划”为工作名称；5,000 万元为合作方拟提供的算力面值，以书面协议为准。评审与导师为邀约中，以官方公布为准。免费算力不代表获奖、获投或发行承诺。演示数据均已标注。© 2026 迭代</p></div>`
   }
+
 
   // ---------- 路由 ----------
   const routes = (window.ROUTES = {})

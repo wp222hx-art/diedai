@@ -88,4 +88,27 @@ check "LY09 生成登记幂等" $(req POST /lightyear/usage $C '{"model":"2.5","
 check "    重复请求不重复扣减" $(req POST /lightyear/usage $C '{"model":"2.5","resolution":"720p","seconds":30,"request_id":"ly-r1"}') 200
 check "LY10 2.0 单段超15秒被拒" $(req POST /lightyear/usage $C '{"model":"2.0","resolution":"720p","seconds":20,"request_id":"ly-r2"}') 422
 
+# ---------- 光年计划主流程 ----------
+check "PG01 报名缺院校信息被拒" $(req POST /program/apply $C '{"title":"毕业作业","team":"A组","track":"院校毕业生","form":"AI短片","logline":"一个关于毕业季告别的十分钟短片","accept":true}') 422
+check "PG02 院校毕业生报名成功" $(req POST /program/apply $C '{"title":"毕业作业","team":"A组","track":"院校毕业生","school":"北京电影学院","grad_year":2026,"form":"AI短片","minutes":12,"logline":"一个关于毕业季告别的十分钟短片","accept":true}') 200
+PC=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["code"])')
+check "PG03 机构账号不能报名" $(req POST /program/apply $O '{"title":"x","team":"x","track":"专业团队","form":"AI电影","logline":"xxxxxxxxxxxxxx","accept":true}') 403
+check "PG04 作者不能给自己打分" $(req POST /program/vote/$PC $C '{"story":9,"visual":9,"craft":9}') 403
+check "PG05 匿名观众打分" $(req POST /program/vote/$PC "" '{"story":8,"visual":7,"craft":9,"device":"device-test-000001"}') 200
+check "PG06 同设备重复打分被拒" $(req POST /program/vote/$PC "" '{"story":8,"visual":7,"craft":9,"device":"device-test-000001"}') 409
+check "PG07 分值越界被拒" $(req POST /program/vote/$PC $C2 '{"story":11,"visual":7,"craft":9}') 422
+check "PG08 初选榜加权排名" $(get "/program/board?track=院校毕业生") 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));r=[x for x in d["rows"] if x["votes"]<15 and x["recommend"]];print("    ↳ 不足15票不推荐:", "OK" if not r else "FAIL")'
+check "PG09 创作者不能推荐晋级" $(req POST /program/promote $C) 403
+check "PG10 运营按规则推荐晋级" $(req POST /program/promote $OP) 200
+check "PG11 未晋级作品不可录路演" $(req POST /program/apps/8/roadshow $OP '{"score":90,"note":"x"}') 409
+check "PG12 路演录入（通过）" $(req POST /program/apps/2/roadshow $OP '{"score":86,"note":"世界观完整，镜头一致性好"}') 200
+check "PG13 初审核定算力面值" $(req POST /program/apps/2/approve $OP '{"grant_yuan":800000}') 200
+check "PG14 同一人复核被拒（双人审批）" $(req POST /program/apps/2/approve $OP '{}') 403
+check "PG15 第二人复核→算力发放" $(req POST /program/apps/2/approve $OP2 '{}') 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));print("    ↳ 发放", d["tokens"], "标准Token")'
+check "PG16 重复复核被拒" $(req POST /program/apps/2/approve $OP2 '{}') 409
+check "PG17 肖像授权申请需说明用途" $(req POST /program/likeness/1/request $C '{"purpose":"短"}') 422
+check "PG18 肖像授权申请" $(req POST /program/likeness/1/request $C '{"purpose":"《雾港来信》老年船长角色，约3分钟，国内网络发行"}') 200
+
 echo; echo "通过 $pass，失败 $fail"

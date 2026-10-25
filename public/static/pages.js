@@ -3,81 +3,6 @@
   const R = window.ROUTES
 
   // ================= P01 首页 =================
-  R[''] = async (app) => {
-    const [d, ov] = await Promise.all([api('/home'), api('/lightyear/overview').catch(() => null)])
-    const ed = d.edition, st = d.stats || {}
-    const days = ed ? Math.max(0, Math.ceil((new Date(ed.close_at) - new Date()) / 864e5)) : 0
-    app.innerHTML = `
-    <section class="hero" id="hero-section"><div class="hero-bg"></div><div class="wrap"><div class="hero-copy">
-      <div class="hero-badges"><span class="tag gold">迭代盛典 × 捷成世纪</span><span class="tag">AIGC影视 · 短剧 · 动漫</span><span class="tag">中剧及以上</span></div>
-      <h1 class="h1">让好故事<em>被看见</em><br>让好作品<em>走向市场</em></h1>
-      <p class="lead">不做另一个投稿网站——做把好故事变成<b class="gold">可评估、可投、可制作、可发行</b>项目的协作基础设施。一套作品档案，贯通盛典、孵化、交易与全渠道发行。</p>
-      <div class="hero-note"><span class="pg-label" style="color:var(--gold2)">光年计划</span><span><b>5,000 万元</b> Seedance 影视生成算力，向入驻与入选项目免费开放</span><a class="pg-link" href="#/lightyear">了解详情</a></div>
-      <div class="row"><a class="btn btn-gold" href="#/festival"><i class="fa-solid fa-trophy"></i>报名迭代盛典</a><a class="btn" href="#/market"><i class="fa-solid fa-handshake"></i>进入迭代影市</a></div>
-      ${ed ? `<div class="edition-card"><div><div class="xs gold">当前届次 · ${esc(ed.status)}</div><b>${esc(ed.name)}</b><div class="xs muted">报名截止 ${esc(ed.close_at)} · 典礼 ${esc(ed.ceremony_at)}</div></div><div style="text-align:center;padding-left:16px;border-left:1px solid var(--line2)"><div class="count">${days}</div><div class="xs muted">天后截止</div></div></div>` : ''}
-    </div></div></section>
-    <div class="filmstrip" aria-hidden="true"></div>
-
-    ${ov ? lightyearPoster(ov) : ''}
-    <section class="section" id="stats-section"><div class="wrap">
-      <div class="stats">
-        ${[[st.assets, '作品档案'], [st.entries, '盛典报名'], [st.listings, '影市挂牌'], [st.projects, '孵化项目'], [st.channels, '发行渠道档案'], [st.experts, '公开专家网络']].map(([n, l]) => `<div class="stat"><b>${n ?? 0}</b><span>${l}</span></div>`).join('')}
-      </div>
-      <p class="xs dim" style="margin-top:8px">* 平台数据为试点演示样本；行业数据见下方“行业洞察”并标注来源。</p>
-    </div></section>
-
-    <section class="section" style="padding-top:10px" id="lines-section"><div class="wrap">
-      <div class="section-head"><div><div class="eyebrow">ONE ASSET · FOUR LINES</div><h2 class="h2">一套作品档案，四条独立业务线</h2></div><p class="muted small" style="max-width:420px">入围不是获投，获奖不是成交，推荐不是发行保证。评奖、投决、采购三条决策线相互独立。</p></div>
-      <div class="cards c4">
-        ${[
-          ['01', 'fa-trophy', '迭代盛典', '#/festival', '发现新一代影视创作力量', ['完成作品组 / 项目提案组', '盲审·回避·双人批准发布', '可验证电子证书与荣誉库']],
-          ['02', 'fa-clapperboard', '迭代影创', '#/incubate', '让好故事成为可交付作品', ['试制包 / 孵化包 / 联合开发包', '算力预算三场景生成器', 'M0—M4 里程碑验收']],
-          ['03', 'fa-handshake', '迭代影市', '#/market', '连接创作者、版权方与市场', ['剧本/IP·联合开发·成片许可', 'NDA + 分级资料室', '权利库存原子锁权防一权多售']],
-          ['04', 'fa-satellite-dish', '发行中心', '#/distribution', '全渠道发行协作中台', ['渠道档案·窗口日历', '母版交付·送审·上线证据', '报表对账·实收分账瀑布']],
-        ].map(([n, i, t, h, s, li]) => `<a class="card hover line-card" href="${h}"><span class="num">${n}</span><div class="ico"><i class="fa-solid ${i}"></i></div><div class="h3">${t}</div><div class="xs gold">${s}</div><ul>${li.map((x) => `<li>${x}</li>`).join('')}</ul></a>`).join('')}
-      </div>
-    </div></section>
-
-    <section class="section" id="featured-section"><div class="wrap">
-      <div class="section-head"><div><div class="eyebrow">MARKET PICKS</div><h2 class="h2">影市精选</h2></div><a class="btn btn-sm" href="#/market">查看全部 <i class="fa-solid fa-arrow-right"></i></a></div>
-      <div class="cards c3">${d.listings.map(posterCard).join('') || '<div class="empty">暂无公开挂牌</div>'}</div>
-    </div></section>
-
-    <section class="section" id="honor-section"><div class="wrap">
-      <div class="cards c2">
-        <div class="card"><div class="eyebrow">HALL OF HONOR</div><h3 class="h2" style="font-size:24px">荣誉库</h3>
-          <div class="stack" style="margin-top:14px">${d.honors.map((h) => `<div class="between"><div class="row"><span class="laurel"><i class="fa-solid fa-award"></i>${esc(h.award)}</span><b>《${esc(h.title)}》</b></div><a class="xs gold" href="#/verify/${esc(h.cert)}">验真 ${esc(h.cert)}</a></div><div class="xs muted">${esc(h.edition)} · ${esc(h.form)}</div>`).join('<div class="hr" style="margin:6px 0"></div>') || '<p class="muted">暂无</p>'}</div>
-          <a class="btn btn-sm" style="margin-top:16px" href="#/festival?tab=honors">进入荣誉库</a></div>
-        <div class="card"><div class="eyebrow">DEMAND BOARD</div><h3 class="h2" style="font-size:24px">机构需求广场</h3>
-          <div class="stack" style="margin-top:14px">${d.demands.map((m) => `<div><div class="between"><b class="small">${esc(m.title)}</b><span class="tag amber">截止 ${esc(m.deadline)}</span></div><div class="xs muted">${esc(m.genre)} · ${esc(m.duration)} · ${esc(m.region)} · ${esc(m.budget_band)}</div></div>`).join('<div class="hr" style="margin:6px 0"></div>')}</div>
-          <p class="xs dim" style="margin-top:12px">需求单不是平台采购承诺，匹配按题材、地区、资源及权利，不以付费提高评分。</p></div>
-      </div>
-    </div></section>
-
-    <section class="section" id="flow-section"><div class="wrap">
-      <div class="section-head"><div><div class="eyebrow">END TO END</div><h2 class="h2">端到端：从建档到回款</h2></div></div>
-      <div class="card"><div class="flow">${['作品建档', '独立参赛', '荣誉发布', '自愿挂牌', '机构选片', '合同锁权', '窗口校验', '母版译配', '渠道送审', '上线证据', '报表对账', '实收分账'].map((s, i) => `<div class="flow-step ${i < 12 ? 'done' : ''}"><div class="dot">${String(i + 1).padStart(2, '0')}</div><p>${s}</p></div>`).join('')}</div></div>
-    </div></section>
-
-    <section class="section" id="insight-section"><div class="wrap">
-      <div class="section-head"><div><div class="eyebrow">INDUSTRY INSIGHT</div><h2 class="h2">行业洞察 <span class="small muted">（来自公开报道）</span></h2></div><a class="btn btn-sm" href="#/academy?tab=insights">更多</a></div>
-      <div class="cards c4">${d.insights.map(insightCard).join('')}</div>
-    </div></section>
-
-    <section class="section" id="events-section"><div class="wrap">
-      <div class="section-head"><div><div class="eyebrow">ROADSHOW & SCREENING</div><h2 class="h2">近期路演与活动</h2></div><a class="btn btn-sm" href="#/events">全部活动</a></div>
-      <div class="cards c4">${d.events.map(eventCard).join('')}</div>
-    </div></section>`
-  }
-
-  const insightCard = (i) => `<a class="card hover insight" href="${esc(i.url)}" target="_blank" rel="noopener"><span class="tag gold" style="align-self:flex-start">${esc(i.tag)}</span><b class="small">${esc(i.title)}</b><p class="xs muted">${esc(i.summary)}</p><span class="src"><i class="fa-solid fa-link"></i> ${esc(i.source)} · ${esc(i.date)}</span></a>`
-  const eventCard = (e) => {
-    const dt = new Date(e.date)
-    return `<div class="card hover"><div class="row" style="align-items:flex-start;flex-wrap:nowrap"><div style="text-align:center;min-width:52px;padding:6px;border-radius:10px;border:1px solid rgba(212,169,79,.35)"><div class="xs gold">${dt.getMonth() + 1}月</div><b style="font-family:var(--mono);font-size:22px">${dt.getDate()}</b></div><div><span class="tag">${esc(e.kind)}</span><div class="small" style="font-weight:600;margin-top:6px">${esc(e.title)}</div><div class="xs muted">${esc(e.city)} · ${esc(e.venue)}</div></div></div>
-      <div class="bar" style="margin-top:12px"><i style="width:${Math.min(100, (e.booked / e.capacity) * 100)}%"></i></div><div class="xs dim" style="margin-top:4px">已预约 ${e.booked}/${e.capacity}</div></div>`
-  }
-  window.eventCard = eventCard; window.insightCard = insightCard
-
   // ================= P02 / P06 盛典 =================
   R.festival = async (app, _p, q) => {
     const [{ editions }, { honors }, ex] = await Promise.all([api('/editions'), api('/honors'), api('/experts')])
@@ -365,7 +290,7 @@
     const reg = q.mode === 'register'
     const demo = [['creator@demo.cn', '创作者 林深', 'fa-pen-nib'], ['expert@demo.cn', '评审专家A', 'fa-user-tie'], ['org@demo.cn', '认证机构', 'fa-building'], ['dist@demo.cn', '发行运营', 'fa-satellite-dish'], ['ops@demo.cn', '联合运营', 'fa-shield-halved'], ['finance@demo.cn', '财务复核', 'fa-coins']]
     app.innerHTML = `<div class="wrap section"><div class="cards c2" style="max-width:980px;margin:0 auto;align-items:start">
-      <div class="card" style="padding:28px"><div class="eyebrow">${reg ? 'JOIN' : 'SIGN IN'}</div><h1 class="h2">${reg ? '入驻迭代影交汇' : '登录工作台'}</h1>${reg ? '<p class="xs muted" style="margin-top:10px;padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">入驻并建立作品档案，即可在<a class="pg-link" href="#/lightyear">光年计划</a>中领取基础 Seedance 算力额度。</p>' : ''}
+      <div class="card" style="padding:28px"><div class="eyebrow">${reg ? 'JOIN' : 'SIGN IN'}</div><h1 class="h2">${reg ? '注册并报名光年计划' : '登录'}</h1>${reg ? '<p class="xs muted" style="margin-top:10px;padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">入驻并建立作品档案，即可在<a class="pg-link" href="#/lightyear">光年计划</a>中领取基础 Seedance 算力额度。</p>' : ''}
         <form id="auth-form" style="margin-top:18px">
           ${reg ? `<div class="field"><label>身份</label><div class="row"><label class="check"><input type="radio" name="role" value="creator" ${q.role !== 'institution' ? 'checked' : ''}> 创作者/团队</label><label class="check"><input type="radio" name="role" value="institution" ${q.role === 'institution' ? 'checked' : ''}> 机构（投资/采购/发行）</label></div><div class="hint">专家与运营账号由平台邀请开通。机构提交后需核验资质。</div></div>
           <div class="field"><label>姓名<em>*</em></label><input class="input" name="name" required></div><div class="field"><label>院校/机构</label><input class="input" name="org"></div>` : ''}
@@ -379,7 +304,7 @@
         <div class="cards c2 m2" style="margin-top:14px">${demo.map(([e, l, i]) => `<button class="btn" data-demo="${e}" style="justify-content:flex-start"><i class="fa-solid ${i} gold"></i>${l}</button>`).join('')}</div>
         <div class="notice" style="margin-top:16px"><i class="fa-solid fa-circle-info"></i><div>另有 creator2@demo.cn（苏芮）、expert2/expert3@demo.cn、ops2@demo.cn（第二审批人）用于演示双人审批与多方协作。</div></div></div>
     </div></div>`
-    const go = () => { location.hash = q.next ? decodeURIComponent(q.next) : '#/workbench' }
+    const go = () => { location.hash = q.next ? decodeURIComponent(q.next) : (S.user && ['creator', 'operator', 'finance'].includes(S.user.role) ? '#/me' : '#/workbench') }
     $('#auth-form').onsubmit = async (e) => {
       e.preventDefault()
       const b = bindForm(e.target)

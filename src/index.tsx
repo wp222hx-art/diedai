@@ -4,6 +4,7 @@ import { Env, authMiddleware } from './lib/core'
 import publicRoutes from './routes/public'
 import workRoutes from './routes/work'
 import lightyearRoutes from './routes/lightyear'
+import programRoutes from './routes/program'
 
 const app = new Hono<Env>()
 
@@ -17,6 +18,7 @@ app.get('/api/health', (c) => c.json({ ok: true, service: '迭代影交汇', ver
 app.route('/api', publicRoutes)
 app.route('/api', workRoutes)
 app.route('/api', lightyearRoutes)
+app.route('/api', programRoutes)
 app.all('/api/*', (c) => c.json({ error: '接口不存在' }, 404))
 
 const shell = `<!DOCTYPE html>
@@ -27,8 +29,8 @@ const shell = `<!DOCTYPE html>
 <meta name="theme-color" content="#0b0b0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="迭代影交汇｜迭代盛典 × 捷成世纪 —— AIGC影视创作、盛典、交易与全渠道发行协作平台">
-<title>迭代影交汇 · AIGC影视创作、盛典、交易与发行平台</title>
+<meta name="description" content="光年计划｜迭代 × 捷成世纪 —— 5000万元 AI 影视算力扶持，面向 AI 专业电影团队与影视院校毕业生">
+<title>光年计划 · 迭代 × 捷成世纪 AI 影视扶持</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='30' fill='%230b0b0f' stroke='%23d4a94f' stroke-width='4'/><circle cx='32' cy='32' r='8' fill='%23d4a94f'/></svg>">
 <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
 <link href="/static/style.css" rel="stylesheet">
@@ -36,9 +38,9 @@ const shell = `<!DOCTYPE html>
 <body>
 <div id="grain" aria-hidden="true"></div>
 <header id="topbar">
-  <a href="#/" class="brand" aria-label="迭代影交汇首页">
+  <a href="#/" class="brand" aria-label="光年计划首页">
     <span class="brand-mark"><i class="fa-solid fa-film"></i></span>
-    <span class="brand-text"><b>迭代影交汇</b><small>ITERATION FILM HUB</small></span>
+    <span class="brand-text"><b>光年计划</b><small>ITERATION × JC</small></span>
   </a>
   <nav id="main-nav" aria-label="主导航"></nav>
   <div class="top-actions" id="top-actions"></div>
@@ -54,6 +56,7 @@ const shell = `<!DOCTYPE html>
 <script src="/static/pages.js"></script>
 <script src="/static/work.js"></script>
 <script src="/static/lightyear.js"></script>
+<script src="/static/program.js"></script>
 </body>
 </html>`
 

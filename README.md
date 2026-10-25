@@ -1,3 +1,44 @@
+# 光年计划 · 迭代 × 捷成世纪 AI 影视扶持
+
+> **v3（2026-10-25）品牌主线重构**：整站收敛为一个活动——“光年计划”。5,000 万元 Seedance 2.0 / 2.5 算力，面向国内 AI 专业电影团队与影视院校毕业生，提供 **免费算力 · 完片孵化 · 发行支持**。原平台能力（盛典、影市、发行、工作台）退为配套，入口收进抽屉与页脚。
+
+## 信息架构（5 个一级入口，手机底栏同步）
+| 入口 | 路径 | 内容 |
+|---|---|---|
+| 光年计划（首页） | `#/` | 主视觉、三项扶持、评选流程、评审导师精选、初选榜 Top6、配套入口、报名 CTA |
+| 初选榜 | `#/board`、`#/vote/:code` | 赛道切换；作品页 1—10 分三维打分 + 邀请链接 |
+| 评审导师 | `#/jury` | 12 位评审 + 8 位导师，附公开报道来源 |
+| 配套支持 | `#/support`、`/likeness`、`/predict` | 专家库、老艺术家肖像/声音授权库、算力与周期测算 |
+| 出海交易 | `#/export` | 海外市场数据（带来源）、出海服务、渠道矩阵、链接影市/发行中心 |
+| 报名 / 我的 | `#/apply`、`#/me` | 两赛道报名表；报名进度条、评分排名、算力余额；运营登录后为审批台 |
+
+手机底栏：计划 · 初选榜 · **报名（中心按钮）** · 评审 · 我的。
+
+## 评选机制
+1. **线上初选**：任何人可为作品打分（叙事 / 视觉 / 完成度，各 1—10 分）；登录用户按账号、匿名按设备去重；作者不能自评。
+   - 排名分 = `v/(v+m)·R + m/(v+m)·C`（m=10，C=全站均分），抑制少量刷分
+   - 赛道（专业团队 / 院校毕业生）前 25% 且 ≥15 人评分 → 推荐晋级路演
+2. **路演**：运营录入路演综合分（≥70 通过）与评议意见
+3. **双人审批**：初审核定算力面值（1 万—300 万元）→ 另一名运营复核 → 从“路演扶持池 / 院校专项池”原子扣减并发放标准 Token
+
+## 新增 API（`src/routes/program.ts`）
+`GET /api/program/overview` · `GET /api/program/board?track=` · `GET /api/program/apps/:code` · `POST /api/program/vote/:code` · `POST /api/program/apply` · `GET /api/program/mine` · `GET /api/program/likeness` · `POST /api/program/likeness/:id/request` · `GET /api/program/admin` · `POST /api/program/promote` · `POST /api/program/apps/:id/roadshow` · `POST /api/program/apps/:id/approve`
+
+数据表（`migrations/0003_program.sql`）：`program_apps`、`program_votes`、`program_people`、`likeness_library`；演示数据 `seed_program.sql`。
+
+## 数据真实性说明
+- 评审 / 导师：取自公开报道中的院校与电影节评审经历（北影节 AIGC 单元、北京电影学院“学生导演奖”、北影节创投等），页面附来源链接，状态均标“邀约中”
+- 出海数据：DataEye / 虎嗅 / 钛媒体公开报道，页面附来源
+- 肖像授权库：为合作模式演示条目（未指名具体艺人），以正式授权合同为准
+- 报名作品与评分：演示数据
+
+## 测试
+`bash tests/acceptance.sh` → **73 项通过**（新增 PG01—PG18：报名校验、自评拦截、去重、加权排名、晋级规则、路演、双人审批、肖像申请）
+
+演示账号（密码 `demo1234`）：creator@demo.cn（创作者）、ops@demo.cn + ops2@demo.cn（双人审批）
+
+---
+
 # 迭代影交汇 · Iteration Film Hub
 > 迭代盛典 × 捷成世纪｜AIGC 影视创作、盛典、交易与全渠道发行协作平台（工作名）
 
