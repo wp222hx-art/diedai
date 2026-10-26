@@ -198,7 +198,7 @@
     <div class="wrap section" style="padding-top:22px;max-width:760px">
       <form id="apply-form" class="card">
         <div class="field"><label>报名赛道 <em>*</em></label><div class="ly-seg" data-name="track"><button type="button" data-v="专业团队" class="on">AI 专业电影团队</button><button type="button" data-v="院校毕业生">影视院校毕业生</button></div></div>
-        <div class="grid2" id="grad-fields" style="display:none"><div class="field"><label>毕业院校 <em>*</em></label><input class="input" name="school" placeholder="如：北京电影学院"></div><div class="field"><label>毕业年份 <em>*</em></label><select class="input" name="grad_year">${[2027, 2026, 2025, 2024, 2023, 2022, 2021].map((y) => `<option>${y}</option>`).join('')}</select></div></div>
+        <div class="grad-grid" id="grad-fields" style="display:none"><div class="field"><label>毕业院校 <em>*</em></label>${schoolPicker('school')}</div><div class="field"><label>毕业年份 <em>*</em></label><select class="input" name="grad_year">${[2027, 2026, 2025, 2024, 2023, 2022, 2021].map((y) => `<option>${y}</option>`).join('')}</select></div></div>
         <div class="grid2"><div class="field"><label>作品名称 <em>*</em></label><input class="input" name="title" placeholder="不含书名号"></div><div class="field"><label>团队名称 <em>*</em></label><input class="input" name="team"></div></div>
         <div class="grid2"><div class="field"><label>作品形态 <em>*</em></label><select class="input" name="form">${['AI电影', 'AI短片', 'AI剧集', 'AI动画'].map((f) => `<option>${f}</option>`).join('')}</select></div><div class="field"><label>成片 / 计划时长（分钟）</label><input class="input" type="number" name="minutes" min="1" max="300" value="20"></div></div>
         <div class="field"><label>一句话梗概 <em>*</em></label><textarea class="input" name="logline" maxlength="200" style="min-height:76px"></textarea></div>
@@ -208,10 +208,12 @@
         <button class="btn btn-gold btn-block" style="margin-top:12px">提交报名</button>
       </form></div>`
     const f = $('#apply-form')
+    bindSchoolPicker(f)
     $$('.ly-seg button', f).forEach((b) => (b.onclick = () => { $$('.ly-seg button', f).forEach((x) => x.classList.remove('on')); b.classList.add('on'); $('#grad-fields').style.display = b.dataset.v === '院校毕业生' ? '' : 'none' }))
     f.onsubmit = async (e) => {
       e.preventDefault()
-      const body = { ...bindForm(f), track: $('.ly-seg .on', f).dataset.v }
+      const body = { ...bindForm(f), track: $('.ly-seg .on', f).dataset.v, school: schoolValue(f) }
+      delete body.school_other
       try { const r = await api('/program/apply', { body }); toast('报名成功，快去邀请好友打分吧', 'ok'); location.hash = '#/vote/' + r.code } catch (er) { errToast(er) }
     }
   }

@@ -589,3 +589,21 @@ table.tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
 .pg-dl dt{color:var(--dim);font-size:12px;padding:8px 0;border-bottom:1px solid var(--line)}
 .pg-dl dd{padding:8px 0;border-bottom:1px solid var(--line)}
 .pg-slogan{font-family:var(--serif);font-size:clamp(15px,1.6vw,18px);letter-spacing:.3em;color:var(--muted);margin-top:10px}
+/* 金鼎盛典 */
+.jd-toc{display:flex;gap:6px 18px;flex-wrap:wrap;margin-top:28px;padding-top:14px;border-top:1px solid var(--line2)}
+.jd-toc a{font-size:13px;color:var(--muted)}.jd-toc a:hover{color:var(--gold2)}
+.jd-sec{margin-bottom:46px}
+.jd-points{list-style:none;margin-top:16px;border-top:1px solid var(--line)}
+.jd-points li{padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.jd-chain{display:flex;align-items:stretch;gap:10px}
+.jd-node{flex:1;border:1px solid var(--line);background:var(--panel);padding:16px}
+.jd-node.on{border-color:var(--gold)}
+.jd-node b{display:block;font-family:var(--serif);font-size:18px;margin:6px 0 4px}
+.jd-arrow{align-self:center;color:var(--dim)}
+.jd-steps{grid-template-columns:repeat(5,1fr)}
+.jd-article p{margin:0 0 14px;line-height:1.9}
+.school-picker{display:flex;flex-direction:column;gap:8px}
+@media (max-width:900px){.jd-chain{flex-direction:column}.jd-arrow{transform:rotate(90deg)}.jd-steps{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.jd-steps{grid-template-columns:1fr}.jd-toc{gap:4px 14px}}
+.grad-grid{display:grid;grid-template-columns:2fr 1fr;gap:0 14px}
+@media (max-width:640px){.grad-grid{grid-template-columns:1fr}}

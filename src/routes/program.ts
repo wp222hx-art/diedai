@@ -238,4 +238,44 @@ r.post('/program/apps/:id/approve', async (c) => {
   return c.json({ stage: '已审批', tokens })
 })
 
+// ---------------- 金鼎盛典栏目 ----------------
+r.get('/jinding', async (c) => {
+  const db = c.env.DB
+  const sections = ((await db.prepare('SELECT code,title,body,status,updated_at FROM jd_sections ORDER BY sort').all()).results as any[]).map((x) => ({ ...x, body: JSON.parse(x.body || '{}') }))
+  const posts = (await db.prepare('SELECT id,title,pub_date,category,summary,source,url,cover FROM jd_posts ORDER BY pub_date DESC, id DESC').all()).results
+  const honors = (await db.prepare(`SELECT ce.code cert, aw.name award, a.title, a.form, e.name edition FROM award_results ar JOIN awards aw ON aw.id=ar.award_id
+    JOIN entries en ON en.id=ar.entry_id JOIN assets a ON a.id=en.asset_id JOIN editions e ON e.id=en.edition_id
+    LEFT JOIN certificates ce ON ce.award_result_id=ar.id WHERE ar.status='有效' ORDER BY ar.id DESC LIMIT 6`).all()).results
+  return c.json({ sections, posts, honors, note: '本栏目体系内容为依据合作方案整理的草案；“公众号文章”栏目仅收录经授权导入的官方文章，并保留原文链接。' })
+})
+r.get('/jinding/posts/:id', async (c) => {
+  const p = await c.env.DB.prepare('SELECT * FROM jd_posts WHERE id=?').bind(c.req.param('id')).first()
+  return p ? c.json(p) : c.json({ error: '文章不存在' }, 404)
+})
+r.post('/jinding/posts', async (c) => {
+  const g = need(c, ['operator']); if (g.err) return g.err
+  const b = await c.req.json().catch(() => ({}))
+  if (!b.title || !b.body) return c.json({ error: '请填写标题与正文' }, 422)
+  if (b.url && !/^https?:\/\//.test(b.url)) return c.json({ error: '原文链接格式不正确' }, 422)
+  try {
+    const res = await c.env.DB.prepare('INSERT INTO jd_posts (title,pub_date,category,summary,body,cover,source,url,created_by) VALUES (?,?,?,?,?,?,?,?,?)')
+      .bind(String(b.title).slice(0, 120), b.pub_date || null, b.category || '盛典动态', String(b.summary || String(b.body).slice(0, 120)).slice(0, 300), String(b.body).slice(0, 50000), b.cover || null, b.source || '金鼎盛典公众号', b.url || null, g.user.id).run()
+    await audit(c.env.DB, g.user, 'jinding.post', 'jd_post:' + res.meta.last_row_id, b.title)
+    return c.json({ id: res.meta.last_row_id })
+  } catch (e: any) {
+    if (String(e.message).includes('UNIQUE')) return c.json({ error: '该原文链接已导入' }, 409)
+    throw e
+  }
+})
+r.put('/jinding/sections/:code', async (c) => {
+  const g = need(c, ['operator']); if (g.err) return g.err
+  const b = await c.req.json().catch(() => ({}))
+  if (!b.body || typeof b.body !== 'object') return c.json({ error: '内容格式不正确' }, 422)
+  const res = await c.env.DB.prepare("UPDATE jd_sections SET body=?, title=COALESCE(?,title), status=COALESCE(?,status), updated_at=datetime('now') WHERE code=?")
+    .bind(JSON.stringify(b.body), b.title || null, b.status || null, c.req.param('code')).run()
+  if (!res.meta.changes) return c.json({ error: '栏目不存在' }, 404)
+  await audit(c.env.DB, g.user, 'jinding.section', 'jd_section:' + c.req.param('code'))
+  return c.json({ ok: true })
+})
+
 export default r

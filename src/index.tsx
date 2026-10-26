@@ -56,11 +56,13 @@ const shell = `<!DOCTYPE html>
 <nav id="tabbar" aria-label="移动端导航"></nav>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="modal" role="dialog" aria-modal="true" hidden></div>
+<script src="/static/schools.js"></script>
 <script src="/static/app.js"></script>
 <script src="/static/pages.js"></script>
 <script src="/static/work.js"></script>
 <script src="/static/lightyear.js"></script>
 <script src="/static/program.js"></script>
+<script src="/static/jinding.js"></script>
 </body>
 </html>`
 
