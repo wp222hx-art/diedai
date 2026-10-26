@@ -77,7 +77,7 @@
     $('#top-actions').innerHTML = u
       ? `<a class="btn btn-gold btn-sm btn-login-text" href="#/apply">报名</a>
          <div class="user-chip" id="user-chip"><span class="avatar">${esc(u.name[0])}</span><div><small>${esc(u.role_label || '')}</small><span>${esc(u.name)}</span></div></div>`
-      : `<a class="btn btn-sm btn-ghost btn-login-text" href="#/login">登录</a><a class="btn btn-gold btn-sm" href="#/login?mode=register&next=%23%2Fapply">立即报名</a>`
+      : `<a class="btn btn-sm btn-ghost btn-login-text" href="#/login">登录</a><a class="btn btn-gold btn-sm" href="#/apply">立即报名</a>`
     const chip = $('#user-chip')
     if (chip) chip.onclick = () => modal('账户', `<div class="stack"><div class="row"><span class="avatar" style="width:46px;height:46px;font-size:18px">${esc(u.name[0])}</span><div><b>${esc(u.name)}</b><div class="xs muted">${esc(u.email || '')}</div><div class="xs gold">${esc(u.role_label)} · ${esc(u.org || '')}</div></div></div>
       ${['operator', 'finance', 'admin'].includes(u.role) ? '<a class="btn btn-block btn-gold" href="#/admin" data-close><i class="fa-solid fa-gauge-high"></i>管理后台</a>' : u.role === 'expert' ? '<a class="btn btn-block btn-gold" href="#/review" data-close><i class="fa-solid fa-gavel"></i>评审工作台</a>' : '<a class="btn btn-block" href="#/me" data-close>我的报名与算力</a>'}<a class="btn btn-block" href="#/workbench" data-close>创作 / 业务工作台</a><button class="btn btn-block btn-ghost" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>退出登录</button></div>`,

@@ -66,6 +66,7 @@ const shell = `<!DOCTYPE html>
 <script src="/static/program.js"></script>
 <script src="/static/jinding.js"></script>
 <script src="/static/admin.js"></script>
+<script src="/static/apply.js"></script>
 </body>
 </html>`
 

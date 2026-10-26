@@ -12,7 +12,7 @@
         <dl class="dd-dl">${b.items.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
         <p class="xs muted" style="margin-top:14px"><i class="fa-solid fa-circle-info gold"></i> ${esc(b.note)}</p>${src(b.sources)}</div>
         <div class="dd-call-side"><div class="pg-label">第四届 · 2026</div><b class="dd-big">作品征集</b><p class="xs muted">影视专业毕业生 · 在校生</p>
-          <a class="btn btn-gold btn-block" href="${S.user ? '#/apply?track=院校毕业生' : '#/login?mode=register&next=' + encodeURIComponent('#/apply')}">通过迭影计划提交作品</a>
+          <a class="btn btn-gold btn-block" href="#/apply?track=院校毕业生">通过迭影计划提交作品</a>
           <a class="btn btn-block" href="javascript:void 0" data-go="dd-posts">查看官方公众号文章</a></div></div>`,
     founders: (b) => `<div class="pg-people">${b.people.map(([n, r, d]) => `<div class="pg-person"><span class="av">${esc(n[0])}</span><div><b>${esc(n)}</b><div class="xs gold">${esc(r)}</div><p class="xs muted">${esc(d)}</p></div></div>`).join('')}</div><p class="xs dim" style="margin-top:10px">${esc(b.note)}</p>`,
     history: (b) => `<ol class="dd-timeline">${b.items.map(([d, t, x]) => `<li class="${/待补充/.test(t) ? 'todo' : ''}"><span class="d mono">${esc(d)}</span><div><b>${esc(t)}</b><p class="small muted">${esc(x)}</p></div></li>`).join('')}</ol><p class="xs dim">${esc(b.note)}</p>`,

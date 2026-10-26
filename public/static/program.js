@@ -7,7 +7,7 @@
   const device = () => { let d = localStorage.getItem('dd_device'); if (!d) { d = 'dv' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('dd_device', d) } return d }
   const ST = { 初选中: '', 晋级路演: 'gold', 路演通过: 'green', 已审批: 'green', 未通过: 'red' }
   const stTag = (s) => `<span class="tag ${ST[s] || ''}">${esc(s)}</span>`
-  const applyHref = () => (S.user ? '#/apply' : '#/login?mode=register&next=' + encodeURIComponent('#/apply'))
+  const applyHref = () => '#/apply'
   const rankRow = (x, i, showTrack = true) => `<a class="pg-rank" href="#/vote/${x.code}">
       <span class="no">${String(i + 1).padStart(2, '0')}</span>
       <div class="t"><b>${esc(x.title)}</b><div class="xs dim">${esc(x.team)}${x.school ? ' · ' + esc(x.school) + ' ' + x.grad_year + ' 届' : ''} · ${esc(x.form)}${showTrack ? ' · ' + esc(x.track) : ''}</div></div>
@@ -197,34 +197,7 @@
   }
 
   // ================= 报名 =================
-  R.apply = async (app, _p, q = {}) => {
-    if (!S.user) return needLogin(app, '请先注册 / 登录后报名迭影计划')
-    if (S.user.role !== 'creator') { app.innerHTML = `<div class="wrap section"><div class="empty"><i class="fa-solid fa-circle-info"></i>迭影计划面向创作团队报名，当前账号为「${esc(S.user.role_label || '')}」。<div style="margin-top:12px"><a class="btn btn-sm" href="#/">返回计划</a></div></div></div>`; return }
-    app.innerHTML = `<section class="pg-hero sm"><div class="wrap"><div class="pg-label">迭影计划 · 报名</div><h1 style="font-size:clamp(28px,4.4vw,44px)">提交作品</h1><p class="lead" style="margin:8px 0 0">报名后获得专属打分链接，邀请他人为作品评分进入初选排名。</p></div></section>
-    <div class="wrap section" style="padding-top:22px;max-width:760px">
-      <form id="apply-form" class="card">
-        <div class="field"><label>报名赛道 <em>*</em></label><div class="ly-seg" data-name="track"><button type="button" data-v="专业团队" class="on">AI 专业电影团队</button><button type="button" data-v="院校毕业生">影视院校毕业生</button></div></div>
-        <div class="grad-grid" id="grad-fields" style="display:none"><div class="field"><label>毕业院校 <em>*</em></label>${schoolPicker('school')}</div><div class="field"><label>毕业年份 <em>*</em></label><select class="input" name="grad_year">${[2027, 2026, 2025, 2024, 2023, 2022, 2021].map((y) => `<option>${y}</option>`).join('')}</select></div></div>
-        <div class="grid2"><div class="field"><label>作品名称 <em>*</em></label><input class="input" name="title" placeholder="不含书名号"></div><div class="field"><label>团队名称 <em>*</em></label><input class="input" name="team"></div></div>
-        <div class="grid2"><div class="field"><label>作品形态 <em>*</em></label><select class="input" name="form">${['AI电影', 'AI短片', 'AI剧集', 'AI动画'].map((f) => `<option>${f}</option>`).join('')}</select></div><div class="field"><label>成片 / 计划时长（分钟）</label><input class="input" type="number" name="minutes" min="1" max="300" value="20"></div></div>
-        <div class="field"><label>一句话梗概 <em>*</em></label><textarea class="input" name="logline" maxlength="200" style="min-height:76px"></textarea></div>
-        <div class="field"><label>样片 / 概念片链接</label><input class="input" name="video_url" placeholder="网盘或视频平台链接，1—3 分钟为宜"></div>
-        <div class="field"><label>主创成员</label><input class="input" name="members" placeholder="导演、编剧、AIGC 技术等"></div>
-        <div class="notice" id="dd-tip" style="margin-bottom:12px;display:none"><i class="fa-solid fa-trophy"></i><div>院校毕业生作品可同步推荐参评 <a class="pg-link" href="#/diedai">第四届迭代盛典</a>（以组委会官方报名为准）。</div></div>
-        <label class="check"><input type="checkbox" name="accept"> 我已阅读并同意《迭影计划报名规则》：作品权利清晰，使用的肖像、音乐与素材均已获授权；同意平台展示作品信息用于初选。</label>
-        <button class="btn btn-gold btn-block" style="margin-top:12px">提交报名</button>
-      </form></div>`
-    const f = $('#apply-form')
-    bindSchoolPicker(f)
-    $$('.ly-seg button', f).forEach((b) => (b.onclick = () => { $$('.ly-seg button', f).forEach((x) => x.classList.remove('on')); b.classList.add('on'); $('#grad-fields').style.display = $('#dd-tip').style.display = b.dataset.v === '院校毕业生' ? '' : 'none' }))
-    if (q.track === '院校毕业生') { const gb = $('.ly-seg button[data-v="院校毕业生"]', f); gb && gb.click() }
-    f.onsubmit = async (e) => {
-      e.preventDefault()
-      const body = { ...bindForm(f), track: $('.ly-seg .on', f).dataset.v, school: schoolValue(f) }
-      delete body.school_other
-      try { const r = await api('/program/apply', { body }); toast('报名成功，快去邀请好友打分吧', 'ok'); location.hash = '#/vote/' + r.code } catch (er) { errToast(er) }
-    }
-  }
+  // R.apply 已迁移至 apply.js（移动端分步报名）
 
   // ================= 我的 =================
   R.me = async (app) => {
