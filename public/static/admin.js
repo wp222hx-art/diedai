@@ -326,9 +326,9 @@
     },
 
     async content(el) {
-      el.innerHTML = admHead('内容运营', '金鼎盛典栏目 · 公众号文章导入 · 评审导师与配套资源') + `
+      el.innerHTML = admHead('内容运营', '迭代盛典栏目 · 公众号文章导入 · 评审导师与配套资源') + `
         <div class="pg-links">
-          <a href="#/jinding"><b>金鼎盛典栏目</b><span class="xs muted">七大栏目内容编辑，导入公众号文章</span><i class="fa-solid fa-arrow-right"></i></a>
+          <a href="#/diedai"><b>迭代盛典栏目</b><span class="xs muted">第四届征集、历届获奖、公众号文章导入</span><i class="fa-solid fa-arrow-right"></i></a>
           <a href="#/jury"><b>评审与导师</b><span class="xs muted">评审团、导师名单（邀约状态）</span><i class="fa-solid fa-arrow-right"></i></a>
           <a href="#/support/likeness"><b>肖像授权库</b><span class="xs muted">授权艺人与使用申请</span><i class="fa-solid fa-arrow-right"></i></a>
           <a href="#/export"><b>出海与版权交易</b><span class="xs muted">片单、交易意向与发行</span><i class="fa-solid fa-arrow-right"></i></a>

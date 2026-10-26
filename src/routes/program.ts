@@ -242,16 +242,18 @@ r.post('/program/apps/:id/approve', async (c) => {
   return c.json({ stage: '已审批', tokens })
 })
 
-// ---------------- 金鼎盛典栏目 ----------------
-r.get('/jinding', async (c) => {
+// ---------------- 迭代盛典栏目（接口路径沿用 /jinding，同时提供 /diedai 别名） ----------------
+const diedai = async (c: any) => {
   const db = c.env.DB
   const sections = ((await db.prepare('SELECT code,title,body,status,updated_at FROM jd_sections ORDER BY sort').all()).results as any[]).map((x) => ({ ...x, body: JSON.parse(x.body || '{}') }))
   const posts = (await db.prepare('SELECT id,title,pub_date,category,summary,source,url,cover FROM jd_posts ORDER BY pub_date DESC, id DESC').all()).results
   const honors = (await db.prepare(`SELECT ce.code cert, aw.name award, a.title, a.form, e.name edition FROM award_results ar JOIN awards aw ON aw.id=ar.award_id
     JOIN entries en ON en.id=ar.entry_id JOIN assets a ON a.id=en.asset_id JOIN editions e ON e.id=en.edition_id
     LEFT JOIN certificates ce ON ce.award_result_id=ar.id WHERE ar.status='有效' ORDER BY ar.id DESC LIMIT 6`).all()).results
-  return c.json({ sections, posts, honors, note: '本栏目体系内容为依据合作方案整理的草案；“公众号文章”栏目仅收录经授权导入的官方文章，并保留原文链接。' })
-})
+  return c.json({ sections, posts, honors, note: '本栏目内容整理自公众号「迭代盛典」及新华网、国际在线、北京电影学院、上海戏剧学院等公开报道，均标注来源；第四届赛制细则以组委会正式发布为准。' })
+}
+r.get('/jinding', diedai)
+r.get('/diedai', diedai)
 r.get('/jinding/posts/:id', async (c) => {
   const p = await c.env.DB.prepare('SELECT * FROM jd_posts WHERE id=?').bind(c.req.param('id')).first()
   return p ? c.json(p) : c.json({ error: '文章不存在' }, 404)
@@ -263,7 +265,7 @@ r.post('/jinding/posts', async (c) => {
   if (b.url && !/^https?:\/\//.test(b.url)) return c.json({ error: '原文链接格式不正确' }, 422)
   try {
     const res = await c.env.DB.prepare('INSERT INTO jd_posts (title,pub_date,category,summary,body,cover,source,url,created_by) VALUES (?,?,?,?,?,?,?,?,?)')
-      .bind(String(b.title).slice(0, 120), b.pub_date || null, b.category || '盛典动态', String(b.summary || String(b.body).slice(0, 120)).slice(0, 300), String(b.body).slice(0, 50000), b.cover || null, b.source || '金鼎盛典公众号', b.url || null, g.user.id).run()
+      .bind(String(b.title).slice(0, 120), b.pub_date || null, b.category || '盛典动态', String(b.summary || String(b.body).slice(0, 120)).slice(0, 300), String(b.body).slice(0, 50000), b.cover || null, b.source || '迭代盛典公众号', b.url || null, g.user.id).run()
     await audit(c.env.DB, g.user, 'jinding.post', 'jd_post:' + res.meta.last_row_id, b.title)
     return c.json({ id: res.meta.last_row_id })
   } catch (e: any) {

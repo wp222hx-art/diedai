@@ -111,12 +111,13 @@ check "PG16 重复复核被拒" $(req POST /program/apps/2/approve $OP2 '{}') 40
 check "PG17 肖像授权申请需说明用途" $(req POST /program/likeness/1/request $C '{"purpose":"短"}') 422
 check "PG18 肖像授权申请" $(req POST /program/likeness/1/request $C '{"purpose":"《雾港来信》老年船长角色，约3分钟，国内网络发行"}') 200
 
-# ---------- 金鼎盛典栏目 ----------
-check "JD01 金鼎盛典栏目公开" $(get /jinding) 200
-python3 -c 'import json;d=json.load(open("/tmp/r.json"));print("    ↳ 体系章节", len(d["sections"]), "荣誉", len(d["honors"]))'
+# ---------- 迭代盛典栏目 ----------
+check "JD01 迭代盛典栏目公开" $(get /diedai) 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));c=[x["code"] for x in d["sections"]];w=[x for x in d["sections"] if x["code"]=="winners"][0]["body"]["win"];print("    ↳ 章节",len(c),"含第四届:", "edition4" in c, "首届获奖", len(w), "公众号文章", len(d["posts"]))'
 check "JD02 创作者不能导入文章" $(req POST /jinding/posts $C '{"title":"x","body":"y"}') 403
-check "JD03 运营导入公众号文章" $(req POST /jinding/posts $OP '{"title":"金鼎盛典征集公告（测试）","body":"第一段\n\n第二段","url":"https://mp.weixin.qq.com/s/test001","pub_date":"2026-10-20"}') 200
+check "JD03 运营导入公众号文章" $(req POST /jinding/posts $OP '{"title":"迭代盛典征集公告（测试）","body":"第一段\n\n第二段","url":"https://mp.weixin.qq.com/s/test001","pub_date":"2026-10-20"}') 200
 check "JD04 同一原文链接不可重复导入" $(req POST /jinding/posts $OP '{"title":"重复","body":"y","url":"https://mp.weixin.qq.com/s/test001"}') 409
+check "JD06 文章详情" $(get /jinding/posts/1) 200
 check "JD05 院校下拉值报名（海外院校）" $(req POST /program/apply $C2 '{"title":"海外毕业作品","team":"NYU组","track":"院校毕业生","school":"NYU 纽约大学 Tisch 艺术学院","grad_year":2025,"form":"AI短片","logline":"一名留学生在纽约地铁里拍下的最后一个镜头","accept":true}') 200
 
 # ---------- 作品视频 / 专家评审 / 管理后台 ----------

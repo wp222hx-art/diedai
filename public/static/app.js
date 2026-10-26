@@ -63,12 +63,12 @@
   const NAV = [
     ['#/', '迭影计划', 'fa-film'],
     ['#/board', '初选榜', 'fa-ranking-star'],
-    ['#/jinding', '金鼎盛典', 'fa-trophy'],
+    ['#/diedai', '迭代盛典', 'fa-trophy'],
     ['#/jury', '评审导师', 'fa-user-tie'],
     ['#/support', '配套支持', 'fa-toolbox'],
     ['#/export', '出海交易', 'fa-earth-asia'],
   ]
-  const ALIAS = { '#/admin': '#/me', '#/review': '#/jury', '#/vote': '#/board', '#/lightyear': '#/support', '#/market': '#/export', '#/distribution': '#/export', '#/listing': '#/export', '#/apply': '#/', '#/festival': '#/jinding', '#/verify': '#/jinding' }
+  const ALIAS = { '#/admin': '#/me', '#/review': '#/jury', '#/vote': '#/board', '#/lightyear': '#/support', '#/market': '#/export', '#/distribution': '#/export', '#/listing': '#/export', '#/apply': '#/', '#/festival': '#/diedai', '#/verify': '#/diedai', '#/jinding': '#/diedai' }
   function renderChrome() {
     const h = location.hash || '#/'
     const raw = '#/' + (h.slice(2).split('?')[0].split('/')[0] || ''), base = ALIAS[raw] || raw
@@ -106,7 +106,7 @@
     $('#site-footer').innerHTML = `<div class="wrap"><div class="cols">
       <div><div class="brand" style="margin-bottom:12px"><span class="brand-mark"><i class="fa-solid fa-film"></i></span><span class="brand-text"><b>迭影计划</b><small>ITER·FILM PROGRAM</small></span></div>
         <p class="small muted" style="max-width:380px">迭代 × 捷成世纪 AI 影视扶持计划：免费算力、完片孵化、发行支持。面向 AI 专业电影团队与影视院校毕业生。</p></div>
-      <div><h4>计划</h4><a href="#/apply">报名</a><a href="#/board">初选榜</a><a href="#/jinding">金鼎盛典</a><a href="#/jury">评审与导师</a></div>
+      <div><h4>计划</h4><a href="#/apply">报名</a><a href="#/board">初选榜</a><a href="#/diedai">迭代盛典</a><a href="#/jury">评审与导师</a></div>
       <div><h4>支持</h4><a href="#/support">专家支持</a><a href="#/support/likeness">肖像授权</a><a href="#/support/predict">算力测算</a><a href="#/export">出海与交易</a></div>
       <div><h4>平台</h4><a href="#/workbench">工作台</a><a href="#/verify">证书验真</a><a href="#/academy">行业洞察</a><a href="#/rules">规则与边界</a></div>
     </div><div class="hr"></div>

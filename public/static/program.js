@@ -30,6 +30,10 @@
       <div class="pg-hero-meta"><span>报名截止 <b>2027.01.31</b></span><span>已报名 <b>${s.apps || 0}</b> 部</span><span>累计评分 <b>${(s.votes || 0).toLocaleString()}</b> 人次</span></div>
     </div></section>
 
+    <section class="dd-strip"><div class="wrap"><a href="#/diedai" class="dd-strip-in">
+      <span class="dd-live"><i></i>征集中</span><b>第四届迭代盛典 · 影视专业毕业生作品征集已启动</b>
+      <span class="xs muted">2021 年由张会军、杨步亭、岳晓湄等电影专家发起 · 院校毕业生赛道可同步参评</span><i class="fa-solid fa-arrow-right"></i></a></div></section>
+
     <section class="section"><div class="wrap">
       ${head('01', '三项扶持', '路演通过并完成双人审批后生效；算力与项目绑定，不可提现或转让。')}
       <div class="pg-three">
@@ -193,7 +197,7 @@
   }
 
   // ================= 报名 =================
-  R.apply = async (app) => {
+  R.apply = async (app, _p, q = {}) => {
     if (!S.user) return needLogin(app, '请先注册 / 登录后报名迭影计划')
     if (S.user.role !== 'creator') { app.innerHTML = `<div class="wrap section"><div class="empty"><i class="fa-solid fa-circle-info"></i>迭影计划面向创作团队报名，当前账号为「${esc(S.user.role_label || '')}」。<div style="margin-top:12px"><a class="btn btn-sm" href="#/">返回计划</a></div></div></div>`; return }
     app.innerHTML = `<section class="pg-hero sm"><div class="wrap"><div class="pg-label">迭影计划 · 报名</div><h1 style="font-size:clamp(28px,4.4vw,44px)">提交作品</h1><p class="lead" style="margin:8px 0 0">报名后获得专属打分链接，邀请他人为作品评分进入初选排名。</p></div></section>
@@ -206,12 +210,14 @@
         <div class="field"><label>一句话梗概 <em>*</em></label><textarea class="input" name="logline" maxlength="200" style="min-height:76px"></textarea></div>
         <div class="field"><label>样片 / 概念片链接</label><input class="input" name="video_url" placeholder="网盘或视频平台链接，1—3 分钟为宜"></div>
         <div class="field"><label>主创成员</label><input class="input" name="members" placeholder="导演、编剧、AIGC 技术等"></div>
+        <div class="notice" id="dd-tip" style="margin-bottom:12px;display:none"><i class="fa-solid fa-trophy"></i><div>院校毕业生作品可同步推荐参评 <a class="pg-link" href="#/diedai">第四届迭代盛典</a>（以组委会官方报名为准）。</div></div>
         <label class="check"><input type="checkbox" name="accept"> 我已阅读并同意《迭影计划报名规则》：作品权利清晰，使用的肖像、音乐与素材均已获授权；同意平台展示作品信息用于初选。</label>
         <button class="btn btn-gold btn-block" style="margin-top:12px">提交报名</button>
       </form></div>`
     const f = $('#apply-form')
     bindSchoolPicker(f)
-    $$('.ly-seg button', f).forEach((b) => (b.onclick = () => { $$('.ly-seg button', f).forEach((x) => x.classList.remove('on')); b.classList.add('on'); $('#grad-fields').style.display = b.dataset.v === '院校毕业生' ? '' : 'none' }))
+    $$('.ly-seg button', f).forEach((b) => (b.onclick = () => { $$('.ly-seg button', f).forEach((x) => x.classList.remove('on')); b.classList.add('on'); $('#grad-fields').style.display = $('#dd-tip').style.display = b.dataset.v === '院校毕业生' ? '' : 'none' }))
+    if (q.track === '院校毕业生') { const gb = $('.ly-seg button[data-v="院校毕业生"]', f); gb && gb.click() }
     f.onsubmit = async (e) => {
       e.preventDefault()
       const body = { ...bindForm(f), track: $('.ly-seg .on', f).dataset.v, school: schoolValue(f) }

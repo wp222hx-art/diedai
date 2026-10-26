@@ -1,4 +1,4 @@
--- 金鼎盛典栏目：体系内容（可由运营维护）+ 公众号文章导入
+-- 迭代盛典栏目（原工作名“金鼎盛典”，表名沿用 jd_）：体系内容（可由运营维护）+ 公众号文章导入
 CREATE TABLE IF NOT EXISTS jd_sections (
   id INTEGER PRIMARY KEY AUTOINCREMENT, code TEXT UNIQUE, title TEXT, body TEXT, sort INTEGER DEFAULT 0,
   status TEXT DEFAULT '草案', updated_at TEXT DEFAULT (datetime('now'))
