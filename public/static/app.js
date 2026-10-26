@@ -68,7 +68,7 @@
     ['#/support', '配套支持', 'fa-toolbox'],
     ['#/export', '出海交易', 'fa-earth-asia'],
   ]
-  const ALIAS = { '#/vote': '#/board', '#/lightyear': '#/support', '#/market': '#/export', '#/distribution': '#/export', '#/listing': '#/export', '#/apply': '#/', '#/festival': '#/jinding', '#/verify': '#/jinding' }
+  const ALIAS = { '#/admin': '#/me', '#/review': '#/jury', '#/vote': '#/board', '#/lightyear': '#/support', '#/market': '#/export', '#/distribution': '#/export', '#/listing': '#/export', '#/apply': '#/', '#/festival': '#/jinding', '#/verify': '#/jinding' }
   function renderChrome() {
     const h = location.hash || '#/'
     const raw = '#/' + (h.slice(2).split('?')[0].split('/')[0] || ''), base = ALIAS[raw] || raw
@@ -80,17 +80,17 @@
       : `<a class="btn btn-sm btn-ghost btn-login-text" href="#/login">登录</a><a class="btn btn-gold btn-sm" href="#/login?mode=register&next=%23%2Fapply">立即报名</a>`
     const chip = $('#user-chip')
     if (chip) chip.onclick = () => modal('账户', `<div class="stack"><div class="row"><span class="avatar" style="width:46px;height:46px;font-size:18px">${esc(u.name[0])}</span><div><b>${esc(u.name)}</b><div class="xs muted">${esc(u.email || '')}</div><div class="xs gold">${esc(u.role_label)} · ${esc(u.org || '')}</div></div></div>
-      <a class="btn btn-block" href="#/me" data-close>我的报名与算力</a><a class="btn btn-block" href="#/workbench" data-close>创作 / 业务工作台</a><button class="btn btn-block btn-ghost" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>退出登录</button></div>`,
+      ${['operator', 'finance', 'admin'].includes(u.role) ? '<a class="btn btn-block btn-gold" href="#/admin" data-close><i class="fa-solid fa-gauge-high"></i>管理后台</a>' : u.role === 'expert' ? '<a class="btn btn-block btn-gold" href="#/review" data-close><i class="fa-solid fa-gavel"></i>评审工作台</a>' : '<a class="btn btn-block" href="#/me" data-close>我的报名与算力</a>'}<a class="btn btn-block" href="#/workbench" data-close>创作 / 业务工作台</a><button class="btn btn-block btn-ghost" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>退出登录</button></div>`,
       (m) => ($('#logout-btn', m).onclick = () => { closeModal(); logout() }))
 
-    const tabs = [['#/', '计划', 'fa-film'], ['#/board', '初选榜', 'fa-ranking-star'], ['#/apply', '报名', 'fa-plus', 'center'], ['#/jury', '评审', 'fa-user-tie'], ['#/me', '我的', 'fa-user']]
-    $('#tabbar').innerHTML = tabs.map(([href, l, i, cls]) => `<a href="${href}" class="${cls || ''} ${(raw === href || (href !== '#/apply' && base === href)) ? 'active' : ''}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')
+    const tabs = [['#/', '计划', 'fa-film'], ['#/board', '初选榜', 'fa-ranking-star'], ['#/apply', '报名', 'fa-plus', 'center'], ['#/jury', '评审', 'fa-user-tie'], u && ['operator', 'finance', 'admin'].includes(u.role) ? ['#/admin', '后台', 'fa-gauge-high'] : u && u.role === 'expert' ? ['#/review', '评审台', 'fa-gavel'] : ['#/me', '我的', 'fa-user']]
+    $('#tabbar').innerHTML = tabs.map(([href, l, i, cls]) => `<a href="${href}" class="${cls || ''} ${(raw === href || (href !== '#/apply' && base === href && !tabs.some((t) => t && t[0] === raw))) ? 'active' : ''}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')
 
     $('#drawer').innerHTML = `<div class="between" style="margin-bottom:10px"><b class="gold" style="font-family:var(--serif);font-size:18px">导航</b><button class="icon-btn" style="display:grid" id="drawer-close"><i class="fa-solid fa-xmark"></i></button></div>
       ${NAV.map(([href, l, i]) => `<a href="${href}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')}
       <a href="#/apply"><i class="fa-solid fa-plus"></i>立即报名</a><a href="#/me"><i class="fa-solid fa-user"></i>我的报名与算力</a>
       <div class="xs dim" style="padding:16px 10px 6px;letter-spacing:.2em">更多</div>
-      <a href="#/support/predict"><i class="fa-solid fa-chart-line"></i>算力与周期测算</a><a href="#/workbench"><i class="fa-solid fa-briefcase"></i>工作台</a><a href="#/academy"><i class="fa-solid fa-book"></i>行业洞察</a><a href="#/rules"><i class="fa-solid fa-scale-balanced"></i>规则与边界</a>
+      ${u && ['operator', 'finance', 'admin'].includes(u.role) ? '<a href="#/admin"><i class="fa-solid fa-gauge-high"></i>管理后台</a>' : ''}${u && ['expert', 'operator'].includes(u.role) ? '<a href="#/review"><i class="fa-solid fa-gavel"></i>评审工作台</a>' : ''}<a href="#/support/predict"><i class="fa-solid fa-chart-line"></i>算力与周期测算</a><a href="#/workbench"><i class="fa-solid fa-briefcase"></i>工作台</a><a href="#/academy"><i class="fa-solid fa-book"></i>行业洞察</a><a href="#/rules"><i class="fa-solid fa-scale-balanced"></i>规则与边界</a>
       ${u ? `<a href="javascript:void 0" id="drawer-logout"><i class="fa-solid fa-right-from-bracket"></i>退出登录</a>` : `<a href="#/login"><i class="fa-solid fa-right-to-bracket"></i>登录 / 入驻</a>`}`
     $('#drawer-close').onclick = closeDrawer
     const dl = $('#drawer-logout'); if (dl) dl.onclick = () => { closeDrawer(); logout() }
@@ -152,7 +152,7 @@
       </div></a>`
   }
   const statusTag = (s) => {
-    const m = { 有效: 'green', 已发布: 'green', 已批准: 'green', 已提交: 'cyan', 评审中: 'cyan', 获奖: 'gold', 履约中: 'gold', 已上线: 'green', 已通过: 'green', 进行中: 'cyan', 验收中: 'amber', 待批准: 'amber', 审核中: 'amber', 待接受: 'amber', 送审: 'amber', 意向: 'amber', 已撤销: 'red', 已回避: 'red', 已拒绝: 'red', 已撤权: 'red', 补件: 'red', 候选: '', 未接入: '', 部分到账: 'amber', 已全额到账: 'green', 待审批: 'amber', 已审批: 'green' }
+    const m = { 有效: 'green', 已发布: 'green', 已批准: 'green', 已提交: 'cyan', 评审中: 'cyan', 获奖: 'gold', 履约中: 'gold', 已上线: 'green', 已通过: 'green', 进行中: 'cyan', 验收中: 'amber', 待批准: 'amber', 审核中: 'amber', 待接受: 'amber', 送审: 'amber', 意向: 'amber', 已撤销: 'red', 已回避: 'red', 已拒绝: 'red', 已撤权: 'red', 补件: 'red', 候选: '', 未接入: '', 部分到账: 'amber', 已全额到账: 'green', 待审批: 'amber', 已审批: 'green', 待审核: 'amber', 已驳回: 'red', 已替换: '', 晋级路演: 'gold', 初选中: '', 路演通过: 'green', 未通过: 'red', 观看中: 'cyan' }
     return `<span class="tag ${m[s] || ''}">${esc(s)}</span>`
   }
   function needLogin(app, msg) {

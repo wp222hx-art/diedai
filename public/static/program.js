@@ -94,7 +94,8 @@
     const link = location.origin + '/#/vote/' + a.code
     app.innerHTML = `<div class="wrap section" style="padding-top:26px;max-width:860px">
       <a class="xs muted" href="#/board">← 初选榜</a>
-      <div class="pg-label" style="margin-top:16px">${esc(a.track)} · ${esc(a.form)}${a.minutes ? ' · ' + a.minutes + ' 分钟' : ''}</div>
+      <div id="work-video" style="margin-top:14px">${window.VPlayer ? window.VPlayer.html(null, { emptyText: '视频加载中…' }) : ''}</div>
+      <div class="pg-label" style="margin-top:18px">${esc(a.track)} · ${esc(a.form)}${a.minutes ? ' · ' + a.minutes + ' 分钟' : ''}</div>
       <h1 class="pg-title">${esc(a.title)}</h1>
       <p class="muted">${esc(a.team)}${a.school ? ' · ' + esc(a.school) + ' ' + a.grad_year + ' 届' : ''}</p>
       <p style="margin:14px 0 18px">${esc(a.logline)}</p>
@@ -110,6 +111,7 @@
         <div class="row" style="flex-wrap:nowrap"><input class="input mono xs" readonly value="${link}" id="share-link" style="min-width:0"><button class="btn" id="copy-btn">复制</button></div></div>
       ${d.recent.length ? `<div style="margin-top:22px"><div class="pg-label">观众短评</div>${d.recent.map((c) => `<div class="ly-flow"><div style="flex:1"><span class="small">${esc(c.comment)}</span><div class="xs dim">${esc(c.name)} · ${esc(String(c.created_at).slice(0, 10))}</div></div></div>`).join('')}</div>` : ''}
     </div>`
+    window.mountWorkVideo && window.mountWorkVideo($('#work-video'), a)
     const f = $('#vote-form'), val = {}
     $$('.pg-score-btns', f).forEach((g) => $$('button', g).forEach((b) => (b.onclick = () => { $$('button', g).forEach((x) => x.classList.toggle('on', +x.dataset.v <= +b.dataset.v)); val[g.dataset.k] = +b.dataset.v })))
     f.onsubmit = async (e) => {
@@ -221,7 +223,8 @@
   // ================= 我的 =================
   R.me = async (app) => {
     if (!S.user) return needLogin(app, '登录后查看报名进度与算力')
-    if (S.user.role === 'operator' || S.user.role === 'finance' || S.user.role === 'admin') return adminPage(app)
+    if (S.user.role === 'operator' || S.user.role === 'finance' || S.user.role === 'admin') { location.hash = '#/admin'; return }
+    if (S.user.role === 'expert') { location.hash = '#/review'; return }
     if (S.user.role !== 'creator') { location.hash = '#/workbench'; return }
     const d = await api('/program/mine')
     const FLOW = ['初选中', '晋级路演', '路演通过', '已审批']
@@ -238,15 +241,18 @@
           <div class="pg-kv" style="grid-template-columns:repeat(3,1fr);margin-top:6px"><div><b>${a.score ? a.score.toFixed(2) : '—'}</b><span>加权评分</span></div><div><b>${a.votes}</b><span>评分人数</span></div><div><b>#${a.rank}</b><span>赛道排名</span></div></div>
           ${a.roadshow_score != null ? `<p class="small muted" style="margin-top:10px">路演 ${a.roadshow_score} 分 · ${esc(a.roadshow_note || '')}</p>` : ''}
           ${a.status === '已审批' ? `<p class="small green" style="margin-top:6px">已获算力面值 ${wanYuan(a.grant_yuan)}，已到账算力账户。</p>` : ''}
-          <div class="row" style="margin-top:12px"><a class="btn btn-sm" href="#/vote/${a.code}">作品页 / 邀请打分</a></div></div>`
+          <div class="me-video"><i class="fa-solid fa-film"></i><span class="small">作品视频</span>${a.video_status ? statusTag(a.video_status) : '<span class="tag amber">未上传</span>'}${a.reviews ? `<span class="xs muted">专家评审 ${a.reviews} 份</span>` : ''}${a.video_reject ? `<span class="xs red">驳回：${esc(a.video_reject)}</span>` : ''}</div>
+          <div class="row" style="margin-top:12px"><button class="btn btn-sm btn-gold" data-up="${a.id}" data-t="${esc(a.title)}"><i class="fa-solid fa-cloud-arrow-up"></i>${a.video_status ? '更换视频' : '上传视频'}</button><a class="btn btn-sm" href="#/vote/${a.code}">作品页 / 邀请打分</a></div></div>`
       }).join('') || `<div class="empty">还没有报名作品<div style="margin-top:12px"><a class="btn btn-gold btn-sm" href="#/apply">立即报名</a></div></div>`}
     </div>`
+    $$('[data-up]').forEach((b) => (b.onclick = () => window.openVideoUpload({ id: +b.dataset.up, title: b.dataset.t }, () => router())))
   }
 
-  async function adminPage(app) {
+  window.programAdminPage = (el, embed) => adminPage(el, embed)
+  async function adminPage(app, embed) {
     const d = await api('/program/admin')
-    app.innerHTML = `<div class="wrap section" style="padding-top:26px">
-      <div class="between"><div><div class="pg-label">运营 · 迭影计划</div><h2 class="h2">初选、路演与算力审批</h2></div><div class="row"><button class="btn btn-gold btn-sm" id="promote-btn">按规则推荐晋级</button><a class="btn btn-sm" href="#/lightyear/wallet">资金池</a><a class="btn btn-sm" href="#/workbench">运营工作台</a></div></div>
+    app.innerHTML = `<div class="${embed ? '' : 'wrap section'}" style="${embed ? '' : 'padding-top:26px'}">
+      <div class="adm-head"><div><div class="pg-label">管理后台 · Admin</div><h1 class="h2">路演与算力审批</h1></div><div class="row"><button class="btn btn-gold btn-sm" id="promote-btn">按规则推荐晋级</button><a class="btn btn-sm" href="#/admin/compute">资金池</a></div></div>
       <p class="xs muted" style="margin:8px 0 16px">规则：赛道前 ${d.rules.top_pct}% 且 ≥${d.rules.min_votes} 人评分推荐晋级；路演 ≥70 分通过；算力发放需两名不同运营人员审批。</p>
       <div class="table-wrap"><table class="tbl rwd"><thead><tr><th>作品</th><th>赛道</th><th>评分</th><th>状态</th><th>路演</th><th>操作</th></tr></thead><tbody>
       ${d.rows.map((x) => `<tr><td data-l="作品"><b class="small">${esc(x.title)}</b><div class="xs dim">${esc(x.team)}</div></td><td data-l="赛道" class="small">${esc(x.track)} #${x.rank}</td><td data-l="评分" class="mono small">${x.score.toFixed(2)} · ${x.votes}人${x.recommend ? ' <span class="tag gold">推荐</span>' : ''}</td><td data-l="状态">${stTag(x.status)}</td><td data-l="路演" class="small">${x.roadshow_score ?? '—'}</td>

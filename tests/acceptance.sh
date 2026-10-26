@@ -119,4 +119,44 @@ check "JD03 运营导入公众号文章" $(req POST /jinding/posts $OP '{"title"
 check "JD04 同一原文链接不可重复导入" $(req POST /jinding/posts $OP '{"title":"重复","body":"y","url":"https://mp.weixin.qq.com/s/test001"}') 409
 check "JD05 院校下拉值报名（海外院校）" $(req POST /program/apply $C2 '{"title":"海外毕业作品","team":"NYU组","track":"院校毕业生","school":"NYU 纽约大学 Tisch 艺术学院","grad_year":2025,"form":"AI短片","logline":"一名留学生在纽约地铁里拍下的最后一个镜头","accept":true}') 200
 
+# ---------- 作品视频 / 专家评审 / 管理后台 ----------
+check "VD01 公开获取已上线视频（站内播放器）" $(get /program/apps/GY7K2Q/video) 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));print("    ↳ player", d["video"]["player"]["type"], d["video"]["status"])'
+check "VD02 待审核视频对公众不可见" $(get /program/apps/TY6H2B/video) 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));print("    ↳ 公众可见:", "无(OK)" if d["video"] is None else "FAIL")'
+check "VD03 非作者不能为他人作品上传" $(req POST /program/apps/1/video $C2 '{"url":"https://www.bilibili.com/video/BV1xx411c7mD"}') 403
+check "VD04 非法链接被拒" $(req POST /program/apps/5/video $C '{"url":"http://evil.example.com/a"}') 422
+check "VD05 B站链接提交→待审核" $(req POST /program/apps/3/video $C '{"url":"https://www.bilibili.com/video/BV1xx411c7mD","title":"正片"}') 200
+get /program/apps/CA8R4T/video $C >/dev/null; python3 -c 'import json;d=json.load(open("/tmp/r.json"));p=d["video"]["player"];print("    ↳", p["type"], p["src"][:60])'
+check "VD06 创作者无权审核视频" $(req POST /admin/videos/1/decide $C '{"action":"approve"}') 403
+check "VD07 驳回需填写原因" $(req POST /admin/videos/8/decide $OP '{"action":"reject"}') 422
+check "VD08 运营审核通过上线" $(req POST /admin/videos/8/decide $OP '{"action":"approve"}') 200
+check "VD09 重复审核被拒" $(req POST /admin/videos/8/decide $OP2 '{"action":"approve"}') 409
+check "VD10 播放统计" $(req POST /media/1/event "" '{"type":"play"}') 200
+check "RV01 评审队列（专家）" $(get /review/queue $E) 200
+check "RV02 创作者无权评审" $(req POST /review/5 $C '{}') 403
+check "RV03 未达观看门槛不可提交" $(req POST /review/5 $E '{"scores":{"story":8,"visual":8,"ai":8,"craft":8,"market":8},"comment":"叙事完整，画面统一，节奏仍可再收紧一些。"}') 422
+req POST /media/5/event $E '{"type":"progress","watched":8}' >/dev/null
+check "RV04 评语过短被拒" $(req POST /review/5 $E '{"scores":{"story":8,"visual":8,"ai":8,"craft":8,"market":8},"comment":"不错"}') 422
+check "RV05 观看达标后提交评审" $(req POST /review/5 $E '{"scores":{"story":8,"visual":9,"ai":7,"craft":8,"market":7},"comment":"牧区影像质感出色，人与马的关系动人，结尾可再克制。","recommend":true}') 200
+python3 -c 'import json;print("    ↳ 百分制总分", json.load(open("/tmp/r.json"))["total"])'
+check "RV06 提交后锁定" $(req POST /review/5 $E '{"scores":{"story":1,"visual":1,"ai":1,"craft":1,"market":1},"comment":"修改评分修改评分修改评分修改评分"}') 409
+check "RV07 利益冲突回避" $(req POST /review/7 $E '{"conflict":["师生关系"]}') 200
+check "AD01 评选总表（专家70%+大众30%）" $(get /admin/selection $OP) 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));t=d["rows"][0];print("    ↳ 第一名",t["title"],"综合",t["composite"]);f=[x["title"] for x in d["rows"] if "分差" in x["flag"]];print("    ↳ 分差预警:",f)'
+check "AD02 创作者不能访问评选总表" $(get /admin/selection $C) 403
+check "AD03 评审详情" $(get /admin/apps/4/reviews $OP) 200
+check "AD04 手动晋级" $(req POST /admin/apps/6/advance $OP) 200
+check "AD05 非初选中作品不可重复晋级" $(req POST /admin/apps/6/advance $OP) 409
+check "AD06 后台概览统计" $(get /admin/stats $OP) 200
+# 站内文件上传（R2）
+UP=$(curl -s -o /tmp/r.json -w '%{http_code}' -X POST "$B/program/apps/7/video" -H "Authorization: Bearer $C" -H 'Content-Type: video/mp4' -H 'x-file-name: demo.mp4' -H 'x-duration: 8' --data-binary @public/static/media/demo3.mp4)
+check "UP01 本地视频上传至 R2" $UP 200
+VID=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["id"])')
+check "UP02 非 mp4/webm/mov 被拒" $(curl -s -o /tmp/r.json -w '%{http_code}' -X POST "$B/program/apps/7/video" -H "Authorization: Bearer $C" -H 'Content-Type: image/png' --data-binary @public/static/img/hero-m.jpg) 415
+check "UP03 待审视频匿名不可播放" $(get /media/$VID) 403
+check "UP04 运营可预览待审视频" $(get /media/$VID $OP) 200
+check "UP05 Range 分段播放 206" $(curl -s -o /dev/null -w '%{http_code}' -H 'Range: bytes=0-1023' -H "Authorization: Bearer $OP" "$B/media/$VID") 206
+check "UP06 作者通过 ?token 预览" $(curl -s -o /dev/null -w '%{http_code}' "$B/media/$VID?token=$C") 200
+
 echo; echo "通过 $pass，失败 $fail"

@@ -1,6 +1,6 @@
 import type { Context, Next } from 'hono'
 
-export type Bindings = { DB: D1Database }
+export type Bindings = { DB: D1Database; VIDEOS?: R2Bucket }
 export type User = { id: number; email: string; name: string; role: string; org: string; title: string }
 export type Env = { Bindings: Bindings; Variables: { user: User | null } }
 

@@ -12,7 +12,7 @@
   window.lyTok = tok
   const TIER_NO = { 体验: 'I', 入选: 'II', 孵化: 'III', 共创: 'IV' }
   const TIER_EN = { 体验: 'ONBOARD', 入选: 'SELECTED', 孵化: 'INCUBATION', 共创: 'CO-DEVELOPMENT' }
-  const PAL = ['#c9a45c', '#9c8355', '#7d7768', '#56534d', '#3a3835']
+  const PAL = ['#1f6feb', '#4c8dff', '#00a3b8', '#8fb4ef', '#c2cfe0']
   const head = (no, title, note = '', extra = '') => `<div class="pg-head"><div class="no">${no}</div><div><h2>${title}</h2></div><div>${note ? `<p>${note}</p>` : ''}${extra}</div></div>`
 
   // ---------- 首页：计划海报（One-sheet） ----------
@@ -139,7 +139,7 @@
         <div class="small muted">刊例约 <b style="color:var(--text)">${money(d.base.cost)}</b> · 生成视频 ${Math.round(d.base.genSec / 60).toLocaleString()} 分钟 · 迭代倍率 ${d.base.multiplier}×</div></div>
         <table class="pg-table compact" style="margin-top:14px"><thead><tr><th>场景</th><th style="text-align:right">标准Token</th><th style="text-align:right">刊例成本</th></tr></thead><tbody>${[['low', '乐观'], ['base', '基准'], ['high', '保守']].map(([k, l]) => `<tr><td class="c small" ${k === 'base' ? 'style="color:var(--gold2)"' : ''}>${l}</td><td class="r small">${tok(d[k].std)}</td><td class="r small">${money(d[k].cost)}</td></tr>`).join('')}</tbody></table></div>
       <div class="card"><div class="between"><b>制作周期</b><span class="mono small">${d.totalWeeks} 周 · 约 ${(d.totalWeeks / 4.3).toFixed(1)} 个月</span></div>
-        <div class="ly-gantt">${(() => { let acc = 0; return d.phases.map((p, i) => { const s = (acc / maxW) * 100; acc += p.weeks; return `<div class="ly-g-row"><div><b class="small">${p.name}</b><div class="xs dim">${esc(p.sub)}</div></div><div class="ly-g-track"><i style="left:${s}%;width:${Math.max(3, (p.weeks / maxW) * 100)}%;background:${i % 2 ? '#8c8577' : 'var(--gold)'}"></i></div><span class="mono xs">${p.weeks} 周</span></div>` }).join('') })()}</div>
+        <div class="ly-gantt">${(() => { let acc = 0; return d.phases.map((p, i) => { const s = (acc / maxW) * 100; acc += p.weeks; return `<div class="ly-g-row"><div><b class="small">${p.name}</b><div class="xs dim">${esc(p.sub)}</div></div><div class="ly-g-track"><i style="left:${s}%;width:${Math.max(3, (p.weeks / maxW) * 100)}%;background:${i % 2 ? '#8fb4ef' : 'var(--gold)'}"></i></div><span class="mono xs">${p.weeks} 周</span></div>` }).join('') })()}</div>
         <div class="xs dim">约 ${d.calls.toLocaleString()} 次生成调用 · 操作工时约 ${d.opHours.toLocaleString()} 小时（每次含提示词、参考准备与审片约 3.5 分钟）</div></div>
       <div class="card"><b>计划可覆盖额度</b>
         <table class="pg-table compact" style="margin-top:8px"><thead><tr><th>档</th><th>名称</th><th style="text-align:right">覆盖</th><th style="text-align:right">额度</th></tr></thead><tbody>${d.tiers.map((t) => `<tr><td class="n">${TIER_NO[t.code]}</td><td class="c small">${t.name}</td><td class="r small">${t.coverage}%</td><td class="r small">${tok(t.std)}<div class="xs dim">≈ ${money(t.yuan)}</div></td></tr>`).join('')}</tbody></table>
@@ -202,9 +202,10 @@
     uf.onsubmit = async (e) => { e.preventDefault(); const f = bindForm(uf); try { const r = await api('/lightyear/usage', { body: { ...f, seconds: +f.seconds, input_seconds: +f.input_seconds, asset_id: +f.asset_id || null, request_id: 'req-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) } }); toast(`已扣减 ${tok(r.std)} 标准Token`, 'ok'); router() } catch (er) { errToast(er) } }
   }
   // ---------- 运营：额度审批 ----------
-  async function adminPage(app) {
+  window.lightyearAdminPage = (el, embed) => adminPage(el, embed)
+  async function adminPage(app, embed) {
     const d = await api('/lightyear/admin')
-    app.innerHTML = `<div class="wrap section" style="padding-top:28px"><div class="pg-label">迭影计划 · 运营</div><h2 class="h2">额度审批与资金池</h2>
+    app.innerHTML = `<div class="${embed ? '' : 'wrap section'}" style="${embed ? '' : 'padding-top:28px'}">${embed ? '' : '<div class="pg-label">迭影计划 · 运营</div><h2 class="h2">额度审批与资金池</h2>'}
       <div class="cards c3" style="margin:18px 0">${d.buckets.map((b, i) => `<div class="card"><div class="between"><b class="small">${esc(b.name)}</b><span class="xs mono">${(b.amount_yuan / 1e4).toLocaleString()}万元</span></div><div class="mono" style="margin-top:6px">${tok(b.granted)} / ${tok(b.std_tokens)}</div><div class="bar" style="height:6px;margin-top:6px"><i style="width:${Math.max(1, (b.granted / b.std_tokens) * 100)}%;background:${PAL[i]}"></i></div></div>`).join('')}</div>
       <div class="table-wrap"><table class="tbl rwd"><thead><tr><th>创作者</th><th>说明</th><th>星阶/池</th><th>额度</th><th>状态</th><th>操作</th></tr></thead><tbody>${d.grants.map((g) => `<tr><td data-l="创作者">${esc(g.name)}</td><td data-l="说明" class="full small">${esc(g.note)}</td><td data-l="星阶">${esc(g.tier)} · <span class="xs dim">${esc(g.bucket)}</span></td><td data-l="额度" class="mono">${tok(g.tokens)}</td><td data-l="状态">${statusTag(g.status)}</td><td data-l="操作">${g.status === '待审批' ? `<div class="row"><button class="btn btn-sm btn-gold" data-g="${g.id}" data-a="approve">批准</button><button class="btn btn-sm" data-g="${g.id}" data-a="reject">拒绝</button></div>` : '—'}</td></tr>`).join('')}</tbody></table></div></div>`
     $$('[data-g]').forEach((b) => (b.onclick = async () => { const body = { action: b.dataset.a }; if (b.dataset.a === 'reject') { body.reason = prompt('拒绝原因'); if (!body.reason) return } try { await api(`/lightyear/grants/${b.dataset.g}/decide`, { body }); toast('已处理', 'ok'); router() } catch (e) { errToast(e) } }))

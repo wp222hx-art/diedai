@@ -39,7 +39,7 @@ const EXPORT = {
 async function board(db: D1Database, track?: string) {
   const g = await db.prepare('SELECT AVG((story+visual+craft)/3.0) c FROM program_votes').first<any>()
   const C = g?.c || 7
-  const rows = (await db.prepare(`SELECT a.id,a.code,a.title,a.team,a.track,a.school,a.grad_year,a.form,a.minutes,a.logline,a.status,
+  const rows = (await db.prepare(`SELECT a.id,a.code,a.user_id,a.title,a.team,a.track,a.school,a.grad_year,a.form,a.minutes,a.logline,a.status,
       COUNT(v.id) votes, AVG((v.story+v.visual+v.craft)/3.0) avg, AVG(v.story) s1, AVG(v.visual) s2, AVG(v.craft) s3
       FROM program_apps a LEFT JOIN program_votes v ON v.app_id=a.id ${track ? 'WHERE a.track=?' : ''}
       GROUP BY a.id`).bind(...(track ? [track] : [])).all()).results as any[]
@@ -153,7 +153,11 @@ r.post('/program/apply', async (c) => {
 r.get('/program/mine', async (c) => {
   const g = need(c); if (g.err) return g.err
   const { rows } = await board(c.env.DB)
-  const mine = (await c.env.DB.prepare('SELECT id,grant_yuan,roadshow_score,roadshow_note FROM program_apps WHERE user_id=?').bind(g.user.id).all()).results as any[]
+  const mine = (await c.env.DB.prepare(`SELECT id,grant_yuan,roadshow_score,roadshow_note,
+    (SELECT status FROM program_videos v WHERE v.app_id=program_apps.id AND v.status<>'已替换' ORDER BY v.id DESC LIMIT 1) video_status,
+    (SELECT reject_reason FROM program_videos v WHERE v.app_id=program_apps.id AND v.status<>'已替换' ORDER BY v.id DESC LIMIT 1) video_reject,
+    (SELECT COUNT(*) FROM program_reviews r WHERE r.app_id=program_apps.id AND r.status='已提交') reviews
+    FROM program_apps WHERE user_id=?`).bind(g.user.id).all()).results as any[]
   const ids = new Map(mine.map((x) => [x.id, x]))
   const apps = rows.filter((x) => ids.has(x.id)).map((x) => ({ ...x, ...ids.get(x.id) }))
   const gr = await c.env.DB.prepare("SELECT COALESCE(SUM(tokens),0) t FROM compute_grants WHERE user_id=? AND status IN ('已到账','已授予')").bind(g.user.id).first<any>()
