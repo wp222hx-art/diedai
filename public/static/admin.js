@@ -217,26 +217,35 @@
   // 统一管理后台  #/admin/:tab
   // =====================================================================
   const TABS = [
-    ['overview', '概览', 'fa-gauge-high'],
-    ['videos', '视频审核', 'fa-film'],
-    ['materials', '申报材料', 'fa-folder-open'],
-    ['screening', '展映与宣发', 'fa-tv'],
-    ['export', '出海交易', 'fa-earth-asia'],
-    ['selection', '评选总表', 'fa-ranking-star'],
-    ['roadshow', '路演与审批', 'fa-stamp'],
-    ['compute', '算力资金池', 'fa-coins'],
-    ['content', '内容运营', 'fa-newspaper'],
+    ['dashboard', '总控台', 'fa-gauge-high', '总览'],
+    ['overview', '评选概览', 'fa-chart-simple', '总览'],
+    ['content', '内容管理', 'fa-pen-to-square', '前台内容'],
+    ['experts', '专家体系', 'fa-user-tie', '前台内容'],
+    ['settings', '站点文案', 'fa-font', '前台内容'],
+    ['media', '媒体库', 'fa-images', '前台内容'],
+    ['videos', '视频审核', 'fa-film', '作品与评审'],
+    ['comments', '影片评语', 'fa-comments', '作品与评审'],
+    ['materials', '申报材料', 'fa-folder-open', '作品与评审'],
+    ['selection', '评选总表', 'fa-ranking-star', '作品与评审'],
+    ['roadshow', '路演与审批', 'fa-stamp', '作品与评审'],
+    ['screening', '展映与宣发', 'fa-tv', '扶持与发行'],
+    ['compute', '算力资金池', 'fa-coins', '扶持与发行'],
+    ['export', '出海交易', 'fa-earth-asia', '扶持与发行'],
+    ['audit', '审计日志', 'fa-clock-rotate-left', '系统'],
   ]
   R.admin = async (app, p, q) => {
     if (!S.user) return needLogin(app, '运营人员登录后进入管理后台')
     if (!isOp()) { app.innerHTML = `<div class="wrap section"><div class="empty"><i class="fa-solid fa-user-lock"></i>管理后台仅向运营 / 财务人员开放</div></div>`; return }
-    const tab = TABS.find((t) => t[0] === p[0]) ? p[0] : 'overview'
+    const tab = TABS.find((t) => t[0] === p[0]) ? p[0] : 'dashboard'
     app.innerHTML = `<div class="wrap"><div class="wb adm">
       <aside class="wb-side"><div class="card"><div class="wb-profile adm-me"><span class="avatar">${esc(S.user.name[0])}</span><div><b class="small">${esc(S.user.name)}</b><div class="xs muted">${esc(S.user.role_label || '运营')}</div></div></div>
-        <nav class="wb-menu"><div class="grp">管理后台</div>${TABS.map(([k, l, i]) => `<a href="#/admin/${k}" class="${k === tab ? 'active' : ''}"><i class="fa-solid ${i}"></i>${l}<span class="adm-badge" data-badge="${k}"></span></a>`).join('')}
+        <nav class="wb-menu">${TABS.map(([k, l, i, g], n) => `${n === 0 || TABS[n - 1][3] !== g ? `<div class="grp">${g}</div>` : ''}<a href="#/admin/${k}" class="${k === tab ? 'active' : ''}"><i class="fa-solid ${i}"></i>${l}<span class="adm-badge" data-badge="${k}"></span></a>`).join('')}
           <div class="grp">快捷</div><a href="#/review"><i class="fa-solid fa-gavel"></i>评审工作台</a><a href="#/workbench"><i class="fa-solid fa-briefcase"></i>运营工作台</a></nav></div></aside>
+      <select class="input adm-jump" id="adm-jump" aria-label="切换后台模块">${TABS.map(([k, l, , g]) => `<option value="${k}" ${k === tab ? 'selected' : ''}>${g} · ${l}</option>`).join('')}</select>
       <section id="adm-main" style="min-width:0"><div class="loading-screen" style="min-height:40vh"><div class="reel"></div></div></section></div></div>`
     const main = $('#adm-main')
+    $('#adm-jump').onchange = (e) => (location.hash = '#/admin/' + e.target.value)
+    api('/cms-dashboard').then((d) => { const k = d.kpi; const b = { comments: k.c_flag, materials: k.m_pending, export: k.t_pending, experts: k.no_photo }; Object.entries(b).forEach(([kk, n]) => { const e = $(`[data-badge="${kk}"]`); if (e && n) e.textContent = n }) }).catch(() => {})
     api('/admin/stats').then((s) => {
       const b = { videos: s.pending_videos, roadshow: s.roadshow + s.to_approve }
       Object.entries(b).forEach(([k, n]) => { const e = $(`[data-badge="${k}"]`); if (e && n) e.textContent = n })
@@ -331,16 +340,12 @@
       $('#adm-ly').innerHTML = `<a class="btn" href="#/lightyear/wallet">进入资金池</a>`
     },
 
-    async content(el) {
-      el.innerHTML = admHead('内容运营', '迭代盛典栏目 · 公众号文章导入 · 评审导师与配套资源') + `
-        <div class="pg-links">
-          <a href="#/diedai"><b>迭代盛典栏目</b><span class="xs muted">第四届征集、历届获奖、公众号文章导入</span><i class="fa-solid fa-arrow-right"></i></a>
-          <a href="#/jury"><b>评审与导师</b><span class="xs muted">评审团、导师名单（邀约状态）</span><i class="fa-solid fa-arrow-right"></i></a>
-          <a href="#/support/likeness"><b>肖像授权库</b><span class="xs muted">授权艺人与使用申请</span><i class="fa-solid fa-arrow-right"></i></a>
-          <a href="#/export"><b>出海与版权交易</b><span class="xs muted">片单、交易意向与发行</span><i class="fa-solid fa-arrow-right"></i></a>
-          <a href="#/workbench"><b>运营工作台</b><span class="xs muted">认证、证书、审计日志与事件</span><i class="fa-solid fa-arrow-right"></i></a>
-          <a href="#/board"><b>初选榜（前台）</b><span class="xs muted">查看大众评分实时榜单</span><i class="fa-solid fa-arrow-right"></i></a>
-        </div>`
-    },
+    async content(el, q) { return window.CMS.content(el, q) },
+    async dashboard(el) { return window.CMS.dashboard(el) },
+    async experts(el, q) { return window.CMS.experts(el, q) },
+    async comments(el, q) { return window.CMS.comments(el, q) },
+    async settings(el) { return window.CMS.settings(el) },
+    async media(el) { return window.CMS.media(el) },
+    async audit(el, q) { return window.CMS.audit(el, q) },
   }
 })()

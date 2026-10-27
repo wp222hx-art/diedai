@@ -105,6 +105,7 @@
   function closeDrawer() { $('#drawer').classList.remove('open'); const m = $('#drawer-mask'); m && m.remove() }
 
   function renderFooter() {
+    setTimeout(() => window.siteText && window.siteText().then((T) => { const e = document.getElementById('ft-disc'); if (e && T.footer_disclaimer) e.textContent = T.footer_disclaimer }), 0)
     $('#site-footer').innerHTML = `<div class="wrap"><div class="cols">
       <div><div class="brand" style="margin-bottom:12px"><span class="brand-mark"><i class="fa-solid fa-film"></i></span><span class="brand-text"><b>迭影计划</b><small>ITER·FILM PROGRAM</small></span></div>
         <p class="small muted" style="max-width:380px">迭代 × 捷成世纪 AI 影视扶持计划：免费算力、完片孵化、发行支持。面向 AI 专业电影团队与影视院校毕业生。</p></div>
@@ -112,7 +113,7 @@
       <div><h4>支持</h4><a href="#/support">专家支持</a><a href="#/support/likeness">肖像授权</a><a href="#/support/predict">算力测算</a><a href="#/export">出海与交易</a></div>
       <div><h4>平台</h4><a href="#/workbench">工作台</a><a href="#/verify">证书验真</a><a href="#/academy">行业洞察</a><a href="#/rules">规则与边界</a></div>
     </div><div class="hr"></div>
-    <p class="xs dim">“迭影计划”为工作名称；1 亿元为合作方拟投入的扶持总面值（AI 算力 7,000 万元 + 宣发资源 3,000 万元），以书面协议为准。评审与导师为邀约中，以官方公布为准。免费算力不代表获奖、获投或发行承诺。演示数据均已标注。© 2026 迭代</p></div>`
+    <p class="xs dim" id="ft-disc">“迭影计划”为工作名称；1 亿元为合作方拟投入的扶持总面值（AI 算力 7,000 万元 + 宣发资源 3,000 万元），以书面协议为准。评审与导师为邀约中，以官方公布为准。免费算力不代表获奖、获投或发行承诺。演示数据均已标注。© 2026 迭代</p></div>`
   }
 
 

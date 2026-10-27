@@ -16,23 +16,23 @@
 
   // ================= 首页 = 计划主页 =================
   R[''] = async (app) => {
-    const d = await api('/program/overview')
+    const [d, T] = await Promise.all([api('/program/overview'), window.siteText ? window.siteText() : {}])
     const s = d.stats || {}
     const judges = d.people.filter((p) => p.role === '评审'), mentors = d.people.filter((p) => p.role === '导师')
     app.innerHTML = `
     <section class="pg-hero pg-hero-home"><div class="wrap">
-      <div class="pg-label">迭代 × 捷成世纪 · 2027 年度扶持计划</div>
-      <h1>迭影计划</h1>
+      <div class="pg-label">${esc(T.hero_label || '迭代 × 捷成世纪 · 2027 年度扶持计划')}</div>
+      <h1>${esc(T.hero_title || '迭影计划')}</h1>
       <a class="pg-hero-fund" href="#/fund"><span class="n"><b id="hm-fund">1</b><small>亿元</small></span><span class="t"><b>AI 算力 + 宣发扶持</b><em>7,000 万算力 · 3,000 万宣发</em></span><i class="fa-solid fa-arrow-right"></i></a>
-      <p class="pg-slogan">每一次迭代，离银幕更近一帧</p>
+      <p class="pg-slogan">${esc(T.slogan || '每一次迭代，离银幕更近一帧')}</p>
       <p class="lead">面向国内所有 AI 专业级电影团队与影视院校毕业生，提供 <b style="color:var(--text)">免费算力、宣发推广、完片孵化、发行出海</b>。手机即可报名、上传影片与申报材料，作品审核上线即进入展映厅公开放映。</p>
       <div class="row"><a class="btn btn-gold" href="${applyHref()}">立即报名</a><a class="btn" href="#/screening"><i class="fa-solid fa-play"></i>进入展映厅</a></div>
-      <div class="pg-hero-meta"><span>报名截止 <b>2027.01.31</b></span><span>已报名 <b>${s.apps || 0}</b> 部</span><span>累计评分 <b>${(s.votes || 0).toLocaleString()}</b> 人次</span></div>
+      <div class="pg-hero-meta"><span>报名截止 <b>${esc(T.deadline || '2027.01.31')}</b></span><span>已报名 <b>${s.apps || 0}</b> 部</span><span>累计评分 <b>${(s.votes || 0).toLocaleString()}</b> 人次</span></div>
     </div></section>
 
     <section class="dd-strip"><div class="wrap"><a href="#/diedai" class="dd-strip-in">
-      <span class="dd-live"><i></i>征集中</span><b>第四届迭代盛典 · 影视专业毕业生作品征集已启动</b>
-      <span class="xs muted">2021 年由张会军、杨步亭、岳晓湄等电影专家发起 · 院校毕业生赛道可同步参评</span><i class="fa-solid fa-arrow-right"></i></a></div></section>
+      <span class="dd-live"><i></i>${esc(T.notice_tag || '征集中')}</span><b>${esc(T.notice_title || '第四届迭代盛典 · 影视专业毕业生作品征集已启动')}</b>
+      <span class="xs muted">${esc(T.notice_sub || '2021 年由张会军、杨步亭、岳晓湄等电影专家发起 · 院校毕业生赛道可同步参评')}</span><i class="fa-solid fa-arrow-right"></i></a></div></section>
 
     <section class="section hm-screen"><div class="wrap">
       ${head('00', '正在展映', '审核上线的作品公开放映，看片、打分、分享为作品积累热度。', '<a class="pg-link small" href="#/screening">展映厅 →</a>')}
@@ -92,7 +92,7 @@
   }
 
   function person(p) {
-    return `<div class="pg-person"><div class="av">${esc(p.name[0])}</div><div style="min-width:0"><b>${esc(p.name)}</b><div class="xs muted">${esc(p.title)}</div><div class="xs dim" style="margin-top:4px">${esc(p.record)}</div></div></div>`
+    return `<div class="pg-person">${p.photo ? `<img class="av av-img" src="${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy">` : `<div class="av">${esc(p.name[0])}</div>`}<div style="min-width:0"><b>${esc(p.name)}</b><div class="xs muted">${esc(p.title)}</div><div class="xs dim" style="margin-top:4px">${esc(p.record)}</div></div></div>`
   }
 
   // ================= 初选榜 =================
@@ -130,9 +130,10 @@
           <button class="btn btn-gold btn-block">提交评分</button></form></div>
       <div class="card" style="margin-top:14px"><b class="h3">邀请好友打分</b><p class="xs muted" style="margin:4px 0 10px">复制链接发给朋友、同学或业内同行。</p>
         <div class="row" style="flex-wrap:nowrap"><input class="input mono xs" readonly value="${link}" id="share-link" style="min-width:0"><button class="btn" id="copy-btn">复制</button></div></div>
-      ${d.recent.length ? `<div style="margin-top:22px"><div class="pg-label">观众短评</div>${d.recent.map((c) => `<div class="ly-flow"><div style="flex:1"><span class="small">${esc(c.comment)}</span><div class="xs dim">${esc(c.name)} · ${esc(String(c.created_at).slice(0, 10))}</div></div></div>`).join('')}</div>` : ''}
+      <div id="vote-comments"></div>${d.recent.length ? `<div style="margin-top:22px"><div class="pg-label">观众短评</div>${d.recent.map((c) => `<div class="ly-flow vc-item"><div style="flex:1">${c.pinned ? '<span class="tag gold xs"><i class="fa-solid fa-thumbtack"></i>置顶</span> ' : ''}<span class="small">${esc(c.comment)}</span><div class="xs dim">${esc(c.name)} · ${esc(String(c.created_at).slice(0, 10))}</div>${c.reply ? `<div class="cm-reply"><i class="fa-solid fa-reply"></i><b>迭影计划：</b>${esc(c.reply)}</div>` : ''}</div></div>`).join('')}</div>` : ''}
     </div>`
     window.mountWorkVideo && window.mountWorkVideo($('#work-video'), a)
+    api('/program/apps/' + a.code + '/comments').then((cm) => { const el = $('#vote-comments'); if (el && cm.experts.length) el.innerHTML = `<div style="margin-top:22px"><div class="pg-label">专家短评 · 匿名</div>${cm.experts.map((x) => `<blockquote class="vc-expert ${x.featured ? 'feat' : ''}">${x.featured ? '<span class="tag gold xs"><i class="fa-solid fa-star"></i>精选</span>' : ''}<p>${esc(x.comment)}</p><cite>评审专家 · ${x.total} 分</cite></blockquote>`).join('')}</div>` }).catch(() => {})
     const f = $('#vote-form'), val = {}
     $$('.pg-score-btns', f).forEach((g) => $$('button', g).forEach((b) => (b.onclick = () => { $$('button', g).forEach((x) => x.classList.toggle('on', +x.dataset.v <= +b.dataset.v)); val[g.dataset.k] = +b.dataset.v })))
     f.onsubmit = async (e) => {
@@ -157,7 +158,7 @@
       <div class="pg-people">${grp('导师').map(person).join('')}</div>
       <div class="pg-box" style="margin-top:30px"><div class="pg-label">信息来源</div>
         <table class="pg-table compact" style="margin-top:8px"><tbody>${[...new Map(d.people.map((p) => [p.source_url, p.source])).entries()].map(([u, s]) => `<tr><td class="c xs"><a class="pg-link" href="${esc(u)}" target="_blank" rel="noopener">${esc(s)}</a></td></tr>`).join('')}</tbody></table>
-        <p class="xs dim" style="margin-top:10px">以上为公开报道中的院校与电影节评审经历；本计划评审与导师均为邀约中，最终名单以官方公布为准。</p></div>
+        ${d.people.some((p) => p.photo_credit) ? `<p class="xs dim pg-credit" style="margin-top:10px">照片来源：${d.people.filter((p) => p.photo_credit).map((p) => { const m = String(p.photo_credit).match(/^(.*?)（(https?:[^）]+)）\s*$/); return esc(p.name + ' — ' + (m ? m[1] : p.photo_credit)) + (m ? ` <a class="pg-link" href="${esc(m[2])}" target="_blank" rel="noopener">原图</a>` : '') }).join('；')}</p>` : ''}<p class="xs dim" style="margin-top:10px">以上为公开报道中的院校与电影节评审经历；本计划评审与导师均为邀约中，最终名单以官方公布为准。</p></div>
     </div>`
   }
 
@@ -175,7 +176,7 @@
     const body = $('#sup-body')
     if (tab === 'experts') {
       body.innerHTML = `${head('01', '专家库', '晋级团队可预约专家问诊；专家名单来自公开报道，平台邀约中。')}
-        <div class="pg-people">${experts.map((e) => `<div class="pg-person"><div class="av">${esc(e.name[0])}</div><div style="min-width:0"><b>${esc(e.name)}</b><div class="xs muted">${esc(e.title)}</div><div class="xs dim" style="margin-top:4px">${esc(e.field || '')}</div></div></div>`).join('')}</div>
+        <div class="pg-people">${experts.map((e) => `<div class="pg-person">${e.photo ? `<img class="av av-img" src="${esc(e.photo)}" alt="${esc(e.name)}" loading="lazy">` : `<div class="av">${esc(e.name[0])}</div>`}<div style="min-width:0"><b>${esc(e.name)}</b><div class="xs muted">${esc(e.title)}</div><div class="xs dim" style="margin-top:4px">${esc(e.field || '')}</div></div></div>`).join('')}</div>
         <div style="height:30px"></div>${head('02', '问诊方向', '')}
         <table class="pg-table"><tbody>${[['剧本与结构', '故事大纲、人物弧光、节拍表诊断'], ['视听与分镜', '镜头语言、风格统一、AI 生成镜头的调度'], ['AIGC 技术', '模型选型、角色一致性、参考图与提示词工程'], ['剪辑与声音', '节奏、配乐、AI 配音与终混'], ['权利与合规', '素材权利链、肖像授权、生成合成标识']].map(([a, b], i) => `<tr><td class="n">${String(i + 1).padStart(2, '0')}</td><td class="t"><b>${a}</b></td><td class="c">${b}</td></tr>`).join('')}</tbody></table>`
     } else {

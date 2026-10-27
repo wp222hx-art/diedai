@@ -32,7 +32,7 @@ export async function authMiddleware(c: Context<Env>, next: Next) {
   if (token) {
     const u = await c.env.DB.prepare(
       `SELECT u.id,u.email,u.name,u.role,u.org,u.title FROM sessions s JOIN users u ON u.id=s.user_id
-       WHERE s.token=? AND s.expires_at > datetime('now')`).bind(token).first<User>()
+       WHERE s.token=? AND s.expires_at > datetime('now') AND COALESCE(u.disabled,0)=0`).bind(token).first<User>()
     if (u) c.set('user', u)
   }
   await next()

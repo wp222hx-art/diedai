@@ -248,4 +248,72 @@ check "EX35 创作者不能审核片单" $(req POST /admin/export/titles/$XT/dec
 check "EX36 运营上架" $(req POST /admin/export/titles/$XT/decide $OP '{"action":"approve"}') 200
 check "EX37 上架后公开" $(get /export/titles/$XT) 200
 
+
+echo "—— v4.2 全站后台 CMS ——"
+check "CMS01 schema 运营可读" $(get /cms/schema $OP) 200
+check "CMS02 schema 创作者禁止" $(get /cms/schema $C) 403
+check "CMS03 资源白名单外 404" $(get /cms/secrets $OP) 404
+check "CMS04 评审导师列表" $(get /cms/people $OP) 200
+NP=$(python3 -c 'import json;d=json.load(open("/tmp/r.json"));print(sum(1 for r in d["rows"] if r.get("photo")))'); check "CMS05 评审导师已有授权照片 ≥5" $([ "$NP" -ge 5 ] && echo ok) ok
+check "CMS06 新建评审（缺姓名）422" $(req POST /cms/people $OP '{"title":"x","role":"评审"}') 422
+check "CMS07 新建评审" $(req POST /cms/people $OP '{"name":"测试评审","title":"演示头衔","role":"评审","status":"待联系","photo":"/static/img/people/lu-chuan.jpg","photo_credit":"测试","visible":1}') 200
+PID=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["id"])')
+check "CMS08 前台评审含新人" $(get /program/overview) 200
+check "CMS09 前台出现测试评审" $(grep -c 测试评审 /tmp/r.json) 1
+check "CMS10 隐藏评审" $(req PUT /cms/people/$PID $OP '{"visible":0}') 200
+get /program/overview >/dev/null; check "CMS11 隐藏后前台不显示" $(grep -c 测试评审 /tmp/r.json) 0
+check "CMS12 删除评审" $(req DELETE /cms/people/$PID $OP) 200
+check "CMS13 再删 404" $(req DELETE /cms/people/$PID $OP) 404
+check "CMS14 不可删除资源 405" $(req DELETE /cms/compute/1 $OP) 405
+check "CMS15 不可新建资源 405" $(req POST /cms/compute $OP '{"name":"x"}') 405
+check "CMS16 宣发额度低于已发放 409" $(req PUT /cms/promo/1 $OP '{"amount_yuan":-1}') 409
+check "CMS17 专家库排序" $(req POST /cms/experts/reorder $OP '{"ids":[2,1,3]}') 200
+get /experts >/dev/null; FIRST=$(python3 -c 'import json;d=json.load(open("/tmp/r.json"));r=d["experts"];print(r[0]["id"])'); check "CMS18 前台专家库按排序" $FIRST 2
+check "CMS19 站点文案公开读取" $(get /site) 200
+check "CMS20 文案含 8 项" $(python3 -c 'import json;print(len(json.load(open("/tmp/r.json"))))') 8
+check "CMS21 修改文案" $(req PUT /cms-settings $OP '{"values":{"slogan":"测试口号 · 迭代向前"}}') 200
+get /site >/dev/null; check "CMS22 前台文案即时生效" $(grep -c 测试口号 /tmp/r.json) 1
+req PUT /cms-settings $OP '{"values":{"slogan":"每一次迭代，离银幕更近一帧"}}' >/dev/null
+check "CMS23 文案创作者禁改" $(req PUT /cms-settings $C '{"values":{"slogan":"x"}}') 403
+check "CMS24 评语管理列表" $(get "/cms-comments?kind=all&status=all" $OP) 200
+check "CMS25 疑似违规筛选" $(get "/cms-comments?kind=audience&status=flag" $OP) 200
+FID=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["rows"][0]["id"])')
+check "CMS26 敏感词扫描" $(req POST /cms-comments/scan $OP) 200
+get "/cms-comments?kind=audience&status=visible" $OP >/dev/null
+VID=$(python3 -c 'import json;r=[x for x in json.load(open("/tmp/r.json"))["rows"] if x["kind"]=="audience" and not x["pinned"]];print(r[0]["id"])')
+check "CMS27 隐藏短评" $(req POST /cms-comments/audience/$VID $OP '{"action":"hide"}') 200
+check "CMS28 恢复短评" $(req POST /cms-comments/audience/$VID $OP '{"action":"show"}') 200
+check "CMS29 置顶短评" $(req POST /cms-comments/audience/$VID $OP '{"action":"pin"}') 200
+check "CMS30 官方回复" $(req POST /cms-comments/audience/$VID $OP '{"action":"reply","reply":"感谢观看（测试回复）"}') 200
+check "CMS31 删除短评缺原因 422" $(req POST /cms-comments/audience/$FID $OP '{"action":"delete"}') 422
+check "CMS32 删除违规短评" $(req POST /cms-comments/audience/$FID $OP '{"action":"delete","reason":"广告引流"}') 200
+check "CMS33 批量隐藏" $(req POST /cms-comments/batch $OP "{\"ids\":[$VID],\"action\":\"hide\"}") 200
+check "CMS34 批量恢复" $(req POST /cms-comments/batch $OP "{\"ids\":[$VID],\"action\":\"show\"}") 200
+check "CMS35 非法动作 422" $(req POST /cms-comments/audience/$VID $OP '{"action":"boom"}') 422
+get "/cms-comments?kind=expert&status=all" $OP >/dev/null
+RID=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["rows"][0]["id"])')
+check "CMS36 专家意见撤回公开" $(req POST /cms-comments/expert/$RID $OP '{"action":"unpublish"}') 200
+check "CMS37 专家意见匿名公开" $(req POST /cms-comments/expert/$RID $OP '{"action":"publish"}') 200
+check "CMS38 专家意见运营备注" $(req POST /cms-comments/expert/$RID $OP '{"action":"note","note":"测试备注"}') 200
+check "CMS39 评语管理创作者禁止" $(req POST /cms-comments/audience/$VID $C '{"action":"hide"}') 403
+check "CMS40 作品页公开评语" $(get /program/apps/GY7K2Q/comments) 200
+check "CMS41 公开评语不含专家姓名" $(grep -c '"expert"' /tmp/r.json) 0
+check "CMS42 总控台" $(get /cms-dashboard $OP) 200
+check "CMS43 审计日志" $(get "/cms-audit?q=cms" $OP) 200
+check "CMS44 审计含 CMS 操作" $([ $(grep -o 'cms\.' /tmp/r.json | wc -l) -ge 5 ] && echo ok) ok
+check "CMS45 上传非图片 415" $(curl -s -o /tmp/r.json -w '%{http_code}' -X POST $B/cms-media -H "Authorization: Bearer $OP" -H 'Content-Type: text/plain' --data 'hello') 415
+python3 -c "from PIL import Image;Image.new('RGB',(64,64),(30,110,235)).save('/tmp/t.jpg')"
+check "CMS46 上传图片到媒体库" $(curl -s -o /tmp/r.json -w '%{http_code}' -X POST $B/cms-media -H "Authorization: Bearer $OP" -H 'Content-Type: image/jpeg' --data-binary @/tmp/t.jpg) 200
+MURL=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["url"])')
+check "CMS47 媒体公开访问" $(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000$MURL) 200
+check "CMS48 照片绑定专家库" $(req PUT /cms/experts/3 $OP "{\"photo\":\"$MURL\",\"photo_credit\":\"测试授权\"}") 200
+check "CMS49 不能改自己角色" $(req PUT /cms/users/8 $OP '{"role":"creator"}') 403
+CID=$(curl -s $B/auth/me -H "Authorization: Bearer $C2" | python3 -c 'import sys,json;d=json.load(sys.stdin);print((d.get("user") or d)["id"])')
+check "CMS50 停用用户" $(req PUT /cms/users/$CID $OP '{"disabled":1}') 200
+check "CMS51 停用后会话失效" $(get /auth/me $C2) 401
+check "CMS52 停用后禁止登录" $(req POST /auth/login "" '{"email":"creator2@demo.cn","password":"demo1234"}') 403
+req PUT /cms/users/$CID $OP '{"disabled":0}' >/dev/null; C2=$(login creator2@demo.cn)
+check "CMS53 恢复后可登录" $([ -n "$C2" ] && echo ok) ok
+check "CMS54 签约作品不可删" $(req DELETE /cms/apps/1 $OP) 409
+
 echo; echo "通过 $pass，失败 $fail"

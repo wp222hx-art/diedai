@@ -9,6 +9,7 @@ r.post('/auth/login', async (c) => {
   if (!email || !password) return c.json({ error: '请输入邮箱和密码' }, 422)
   const u = await c.env.DB.prepare('SELECT * FROM users WHERE email=?').bind(String(email).trim().toLowerCase()).first<any>()
   if (!u || (await pbkdf2(password, u.salt)) !== u.pwd_hash) return c.json({ error: '邮箱或密码错误' }, 401)
+  if (u.disabled) return c.json({ error: '账号已停用，请联系平台运营' }, 403)
   const token = rid(32)
   await c.env.DB.prepare("INSERT INTO sessions (token,user_id,expires_at) VALUES (?,?,datetime('now','+7 days'))").bind(token, u.id).run()
   await audit(c.env.DB, u, 'auth.login', 'user:' + u.id)
@@ -89,7 +90,7 @@ r.get('/certificates/:code', async (c) => {
 
 // ---------- 专家网络（公开资料）----------
 r.get('/experts', async (c) => {
-  const rows = await c.env.DB.prepare('SELECT * FROM expert_library ORDER BY id').all()
+  const rows = await c.env.DB.prepare('SELECT * FROM expert_library WHERE COALESCE(visible,1)=1 ORDER BY sort, id').all()
   return c.json({ experts: rows.results, disclaimer: '以下人士信息来源于公开报道，仅用于专家网络建设参考；未经本人书面确认，不代表其已受邀或担任本平台评委。' })
 })
 

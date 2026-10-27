@@ -66,7 +66,7 @@ r.get('/program/overview', async (c) => {
     SUM(status='已审批') granted, (SELECT COUNT(*) FROM program_votes) votes, (SELECT COUNT(DISTINCT school) FROM program_apps WHERE school IS NOT NULL) schools FROM program_apps`).first<any>()
   const pool = await db.prepare('SELECT COALESCE(SUM(granted),0) g FROM compute_buckets').first<any>()
   const buckets = (await db.prepare('SELECT code,name,amount_yuan,std_tokens,granted,intro FROM compute_buckets ORDER BY sort').all()).results
-  const people = (await db.prepare('SELECT * FROM program_people ORDER BY sort').all()).results
+  const people = (await db.prepare('SELECT * FROM program_people WHERE COALESCE(visible,1)=1 ORDER BY sort, id').all()).results
   const { rows } = await board(db)
   return c.json({
     pool: { yuan: POOL_YUAN, std: POOL_STD, granted: pool.g, std_price: STD_PRICE },
@@ -95,7 +95,7 @@ r.get('/program/apps/:code', async (c) => {
   const { rows } = await board(c.env.DB)
   const a = rows.find((x) => x.code === code)
   if (!a) return c.json({ error: '作品不存在或链接已失效' }, 404)
-  const recent = (await c.env.DB.prepare("SELECT name,comment,created_at FROM program_votes WHERE app_id=? AND comment IS NOT NULL AND comment<>'' ORDER BY id DESC LIMIT 8").bind(a.id).all()).results
+  const recent = (await c.env.DB.prepare("SELECT name,comment,reply,pinned,created_at FROM program_votes WHERE app_id=? AND comment IS NOT NULL AND comment<>'' AND COALESCE(hidden,0)=0 ORDER BY pinned DESC, id DESC LIMIT 8").bind(a.id).all()).results
   return c.json({ app: a, recent })
 })
 
