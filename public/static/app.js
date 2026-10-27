@@ -62,13 +62,15 @@
   // ---------- 导航 ----------
   const NAV = [
     ['#/', '迭影计划', 'fa-film'],
+    ['#/screening', '展映厅', 'fa-tv'],
     ['#/board', '初选榜', 'fa-ranking-star'],
+    ['#/fund', '1亿扶持', 'fa-coins'],
     ['#/diedai', '迭代盛典', 'fa-trophy'],
     ['#/jury', '评审导师', 'fa-user-tie'],
     ['#/support', '配套支持', 'fa-toolbox'],
     ['#/export', '出海交易', 'fa-earth-asia'],
   ]
-  const ALIAS = { '#/admin': '#/me', '#/review': '#/jury', '#/vote': '#/board', '#/lightyear': '#/support', '#/market': '#/export', '#/distribution': '#/export', '#/listing': '#/export', '#/apply': '#/', '#/festival': '#/diedai', '#/verify': '#/diedai', '#/jinding': '#/diedai' }
+  const ALIAS = { '#/admin': '#/me', '#/review': '#/jury', '#/vote': '#/board', '#/lightyear': '#/support', '#/promo': '#/me', '#/materials': '#/me', '#/guide': '#/fund', '#/market': '#/export', '#/distribution': '#/export', '#/listing': '#/export', '#/apply': '#/', '#/festival': '#/diedai', '#/verify': '#/diedai', '#/jinding': '#/diedai' }
   function renderChrome() {
     const h = location.hash || '#/'
     const raw = '#/' + (h.slice(2).split('?')[0].split('/')[0] || ''), base = ALIAS[raw] || raw
@@ -83,7 +85,7 @@
       ${['operator', 'finance', 'admin'].includes(u.role) ? '<a class="btn btn-block btn-gold" href="#/admin" data-close><i class="fa-solid fa-gauge-high"></i>管理后台</a>' : u.role === 'expert' ? '<a class="btn btn-block btn-gold" href="#/review" data-close><i class="fa-solid fa-gavel"></i>评审工作台</a>' : '<a class="btn btn-block" href="#/me" data-close>我的报名与算力</a>'}<a class="btn btn-block" href="#/workbench" data-close>创作 / 业务工作台</a><button class="btn btn-block btn-ghost" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>退出登录</button></div>`,
       (m) => ($('#logout-btn', m).onclick = () => { closeModal(); logout() }))
 
-    const tabs = [['#/', '计划', 'fa-film'], ['#/board', '初选榜', 'fa-ranking-star'], ['#/apply', '报名', 'fa-plus', 'center'], ['#/jury', '评审', 'fa-user-tie'], u && ['operator', 'finance', 'admin'].includes(u.role) ? ['#/admin', '后台', 'fa-gauge-high'] : u && u.role === 'expert' ? ['#/review', '评审台', 'fa-gavel'] : ['#/me', '我的', 'fa-user']]
+    const tabs = [['#/', '计划', 'fa-film'], ['#/screening', '展映', 'fa-tv'], ['#/apply', '报名', 'fa-plus', 'center'], ['#/jury', '评审', 'fa-user-tie'], u && ['operator', 'finance', 'admin'].includes(u.role) ? ['#/admin', '后台', 'fa-gauge-high'] : u && u.role === 'expert' ? ['#/review', '评审台', 'fa-gavel'] : ['#/me', '我的', 'fa-user']]
     $('#tabbar').innerHTML = tabs.map(([href, l, i, cls]) => `<a href="${href}" class="${cls || ''} ${(raw === href || (href !== '#/apply' && base === href && !tabs.some((t) => t && t[0] === raw))) ? 'active' : ''}"><i class="fa-solid ${i}"></i>${l}</a>`).join('')
 
     $('#drawer').innerHTML = `<div class="between" style="margin-bottom:10px"><b class="gold" style="font-family:var(--serif);font-size:18px">导航</b><button class="icon-btn" style="display:grid" id="drawer-close"><i class="fa-solid fa-xmark"></i></button></div>
@@ -106,11 +108,11 @@
     $('#site-footer').innerHTML = `<div class="wrap"><div class="cols">
       <div><div class="brand" style="margin-bottom:12px"><span class="brand-mark"><i class="fa-solid fa-film"></i></span><span class="brand-text"><b>迭影计划</b><small>ITER·FILM PROGRAM</small></span></div>
         <p class="small muted" style="max-width:380px">迭代 × 捷成世纪 AI 影视扶持计划：免费算力、完片孵化、发行支持。面向 AI 专业电影团队与影视院校毕业生。</p></div>
-      <div><h4>计划</h4><a href="#/apply">报名</a><a href="#/board">初选榜</a><a href="#/diedai">迭代盛典</a><a href="#/jury">评审与导师</a></div>
+      <div><h4>计划</h4><a href="#/apply">报名</a><a href="#/guide">申报材料指南</a><a href="#/screening">展映厅</a><a href="#/fund">1 亿元扶持</a><a href="#/board">初选榜</a><a href="#/diedai">迭代盛典</a><a href="#/jury">评审与导师</a></div>
       <div><h4>支持</h4><a href="#/support">专家支持</a><a href="#/support/likeness">肖像授权</a><a href="#/support/predict">算力测算</a><a href="#/export">出海与交易</a></div>
       <div><h4>平台</h4><a href="#/workbench">工作台</a><a href="#/verify">证书验真</a><a href="#/academy">行业洞察</a><a href="#/rules">规则与边界</a></div>
     </div><div class="hr"></div>
-    <p class="xs dim">“迭影计划”为工作名称；5,000 万元为合作方拟提供的算力面值，以书面协议为准。评审与导师为邀约中，以官方公布为准。免费算力不代表获奖、获投或发行承诺。演示数据均已标注。© 2026 迭代</p></div>`
+    <p class="xs dim">“迭影计划”为工作名称；1 亿元为合作方拟投入的扶持总面值（AI 算力 7,000 万元 + 宣发资源 3,000 万元），以书面协议为准。评审与导师为邀约中，以官方公布为准。免费算力不代表获奖、获投或发行承诺。演示数据均已标注。© 2026 迭代</p></div>`
   }
 
 

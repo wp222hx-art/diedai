@@ -5,7 +5,9 @@
 //                    Seedance 2.5 不含视频输入 70 元/百万、含视频输入 42 元/百万
 // 标准Token（STD）= 折算到 Seedance 2.0 不含视频输入 46 元/百万 的等值 Token
 // ================================================================
-export const POOL_YUAN = 50_000_000
+export const POOL_YUAN = 70_000_000 // 算力扶持 7000 万元（总扶持 1 亿元 = 算力 7000 万 + 宣发 3000 万）
+export const PROMO_YUAN = 30_000_000
+export const TOTAL_YUAN = POOL_YUAN + PROMO_YUAN
 export const STD_PRICE = 46
 export const POOL_STD = Math.round((POOL_YUAN / STD_PRICE) * 1e6)
 

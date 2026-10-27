@@ -1,9 +1,9 @@
 -- 迭影计划演示数据
-INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('onboard','普惠入驻池',4000000,86956521739,0,'所有入驻且有项目的创作者共享：入驻礼与成长任务即领即用',1);
-INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('selected','入选扶持池',22500000,489130434782,0,'评审≥70分、提名或获奖的项目（入选）：按预测需求定向覆盖60%',2);
-INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('incubate','孵化里程碑池',15000000,326086956521,0,'孵化包 / 联合开发包：随M1—M4里程碑分批释放',3);
-INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('honor','盛典荣誉池',5000000,108695652173,0,'迭代盛典获奖作品荣誉加成，每个有效奖项1亿标准Token',4);
-INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('reserve','风险与机动池',3500000,76086956521,0,'供应中断补偿、返工兜底与特别项目，动用需双人审批',5);
+INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('onboard','普惠入驻池',5600000,121739130435,0,'所有入驻且有项目的创作者共享：入驻礼与成长任务即领即用',1);
+INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('selected','入选扶持池',31500000,684782608696,0,'评审≥70分、提名或获奖的项目（入选）：按预测需求定向覆盖60%',2);
+INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('incubate','孵化里程碑池',21000000,456521739130,0,'孵化包 / 联合开发包：随M1—M4里程碑分批释放',3);
+INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('honor','盛典荣誉池',7000000,152173913043,0,'迭代盛典获奖作品荣誉加成，每个有效奖项1亿标准Token',4);
+INSERT INTO compute_buckets (code,name,amount_yuan,std_tokens,granted,intro,sort) VALUES ('reserve','风险与机动池',4900000,106521739130,0,'供应中断补偿、返工兜底与特别项目，动用需双人审批',5);
 INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,NULL,'join','体验','onboard',5000000,'已到账','入驻礼');
 INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,NULL,'asset','体验','onboard',5000000,'已到账','创建首个作品档案');
 INSERT INTO compute_grants (user_id,asset_id,task_code,tier,bucket,tokens,status,note) VALUES (1,NULL,'entry','体验','onboard',10000000,'已到账','提交盛典报名');

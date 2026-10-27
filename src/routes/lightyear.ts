@@ -31,7 +31,7 @@ r.get('/lightyear/overview', async (c) => {
     pool: { yuan: POOL_YUAN, std: POOL_STD, granted, std_price: STD_PRICE, ref_cost: ref.base.cost, ref_projects: Math.floor(POOL_YUAN / ref.base.cost) },
     buckets, stats, feed, tasks: TASKS, tiers: TIERS, honor_bonus: HONOR_BONUS,
     models: MODELS, styles: STYLES, shots: SHOTS, forms: FORMS, exp: EXP, res: RES,
-    note: '“标准Token”按 Seedance 2.0 不含视频输入刊例价 46元/百万tokens 折算；5000万元为合作方拟提供的算力面值，具体以双方书面协议为准。算力不可提现、转售或跨项目转移。',
+    note: '“标准Token”按 Seedance 2.0 不含视频输入刊例价 46元/百万tokens 折算；7000万元为合作方拟提供的算力面值（另有 3000 万元宣发扶持，合计 1 亿元），具体以双方书面协议为准。算力不可提现、转售或跨项目转移。',
   })
 })
 

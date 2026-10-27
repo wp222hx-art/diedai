@@ -23,10 +23,10 @@
     <section class="pg-hero pg-hero-home"><div class="wrap">
       <div class="pg-label">迭代 × 捷成世纪 · 2027 年度扶持计划</div>
       <h1>迭影计划</h1>
-      <p class="pg-hero-sub"><span>5,000 万元</span> AI 影视算力扶持</p>
+      <a class="pg-hero-fund" href="#/fund"><span class="n"><b id="hm-fund">1</b><small>亿元</small></span><span class="t"><b>AI 算力 + 宣发扶持</b><em>7,000 万算力 · 3,000 万宣发</em></span><i class="fa-solid fa-arrow-right"></i></a>
       <p class="pg-slogan">每一次迭代，离银幕更近一帧</p>
-      <p class="lead">面向国内所有 AI 专业级电影团队与影视院校毕业生，提供 <b style="color:var(--text)">免费算力、完片孵化、发行支持</b>。提交作品，邀请观众打分，通过路演即可获得 Seedance 2.0 / 2.5 专业影视模型算力。</p>
-      <div class="row"><a class="btn btn-gold" href="${applyHref()}">立即报名</a><a class="btn" href="#/board">查看初选榜</a></div>
+      <p class="lead">面向国内所有 AI 专业级电影团队与影视院校毕业生，提供 <b style="color:var(--text)">免费算力、宣发推广、完片孵化、发行出海</b>。手机即可报名、上传影片与申报材料，作品审核上线即进入展映厅公开放映。</p>
+      <div class="row"><a class="btn btn-gold" href="${applyHref()}">立即报名</a><a class="btn" href="#/screening"><i class="fa-solid fa-play"></i>进入展映厅</a></div>
       <div class="pg-hero-meta"><span>报名截止 <b>2027.01.31</b></span><span>已报名 <b>${s.apps || 0}</b> 部</span><span>累计评分 <b>${(s.votes || 0).toLocaleString()}</b> 人次</span></div>
     </div></section>
 
@@ -34,10 +34,22 @@
       <span class="dd-live"><i></i>征集中</span><b>第四届迭代盛典 · 影视专业毕业生作品征集已启动</b>
       <span class="xs muted">2021 年由张会军、杨步亭、岳晓湄等电影专家发起 · 院校毕业生赛道可同步参评</span><i class="fa-solid fa-arrow-right"></i></a></div></section>
 
-    <section class="section"><div class="wrap">
-      ${head('01', '三项扶持', '路演通过并完成双人审批后生效；算力与项目绑定，不可提现或转让。')}
+    <section class="section hm-screen"><div class="wrap">
+      ${head('00', '正在展映', '审核上线的作品公开放映，看片、打分、分享为作品积累热度。', '<a class="pg-link small" href="#/screening">展映厅 →</a>')}
+      <div class="sc-rail" id="hm-rail"><div class="sc-card sk"></div><div class="sc-card sk"></div><div class="sc-card sk"></div></div>
+      <div class="hm-quick">
+        <a href="#/apply"><i class="fa-solid fa-pen-to-square"></i><b>3 分钟报名</b><span>手机分步填写</span></a>
+        <a href="#/guide"><i class="fa-solid fa-folder-open"></i><b>申报材料</b><span>首轮 10 项指南</span></a>
+        <a href="${S.user ? '#/me' : '#/apply'}"><i class="fa-solid fa-cloud-arrow-up"></i><b>上传影片</b><span>4GB · 断点续传</span></a>
+        <a href="#/fund"><i class="fa-solid fa-coins"></i><b>1 亿元扶持</b><span>算力 + 宣发</span></a>
+      </div>
+    </div></section>
+
+    <section class="section" style="padding-top:0"><div class="wrap">
+      ${head('01', '四项扶持', '1 亿元 = AI 算力 7,000 万元 + 宣发资源 3,000 万元；路演通过并完成双人审批后生效。', '<a class="pg-link small" href="#/fund">扶持体系 →</a>')}
       <div class="pg-three">
-        ${[['免费算力', '5,000 万元', `Seedance 2.0 / 2.5 专业影视生成模型。按项目预测用量核定，单项目最高 300 万元面值，分里程碑到账。`, '#/support/predict', '测算我的用量'],
+        ${[['AI 算力', '7,000 万元', `Seedance 2.0 / 2.5 专业影视生成模型。按项目预测用量核定，单项目最高 300 万元面值，分里程碑到账。`, '#/support/predict', '测算我的用量'],
+           ['宣发扶持', '3,000 万元', `首映展映、平台推流、物料制作、电影节报送、媒体公关五大资金池，按评审结果与展映热度分档。`, '#/screening', '进入展映厅'],
            ['完片孵化', '导师 1 对 1', `知名导演、编剧、剪辑导师分组指导，覆盖剧本、分镜、生成、剪辑到终混；配套专家团与肖像授权库。`, '#/jury', '查看导师'],
            ['发行支持', '国内 + 海外', `成片进入迭代影市与发行中心，对接国内平台与海外短剧、视频平台及电影节市场，统一版权交易与分账。`, '#/export', '了解出海']]
           .map(([t, k, p, h, l], i) => `<div class="pg-three-item"><div class="pg-label">0${i + 1}</div><h3>${t}</h3><div class="pg-num" style="font-size:28px;margin:6px 0 10px">${k}</div><p class="small muted">${p}</p><a class="pg-link small" href="${h}">${l} →</a></div>`).join('')}
@@ -69,9 +81,14 @@
         ${[['#/support', '专家支持', '编剧、摄影、美术、剪辑、AIGC 技术专家按需问诊'], ['#/support/likeness', '老艺术家肖像授权', '经授权的肖像与声音素材，合法用于 AI 影视创作'], ['#/export', '海外发行与版权交易', '译配、合规、海外平台分发，成片可挂牌交易'], ['#/support/predict', '算力与周期测算', '按片长、风格、镜头构成预测 Token 用量与制作周期']]
           .map(([h, t, p]) => `<a href="${h}"><b>${t}</b><span class="small muted">${p}</span><i class="fa-solid fa-arrow-right"></i></a>`).join('')}
       </div>
-      <div class="pg-cta"><div><div class="pg-label">报名进行中</div><b>每一次迭代，离银幕更近一帧</b></div><a class="btn btn-gold" href="${applyHref()}">立即报名</a></div>
+      <div class="pg-cta"><div><div class="pg-label">报名进行中 · 1 亿元扶持</div><b>每一次迭代，离银幕更近一帧</b></div><a class="btn btn-gold" href="${applyHref()}">立即报名</a></div>
       <p class="xs dim" style="margin-top:14px">${esc(d.note)}</p>
     </div></section>`
+    api('/screening').then((sc) => {
+      const el = $('#hm-rail'); if (!el) return
+      const ART = ['art-a', 'art-b', 'art-c', 'art-d', 'art-e']
+      el.innerHTML = sc.rows.slice(0, 8).map((x) => `<a class="sc-card" href="#/vote/${x.code}?ref=home"><div class="sc-art ${ART[x.id % 5]}"><span class="sc-play"><i class="fa-solid fa-play"></i></span>${x.featured ? '<span class="sc-feat">主推</span>' : ''}<div class="sc-t">${esc(x.title.replace(/[《》]/g, ''))}</div></div><div class="sc-body"><b>${esc(x.title)}</b><div class="sc-stats xs"><span><i class="fa-solid fa-fire"></i>${x.hot.toLocaleString()}</span><span><i class="fa-solid fa-play"></i>${x.plays.toLocaleString()}</span></div></div></a>`).join('') || '<div class="empty">作品审核上线后在此展映</div>'
+    }).catch(() => {})
   }
 
   function person(p) {
@@ -211,7 +228,8 @@
       <div class="pg-wallet"><div class="between"><div><div class="pg-label">我的 · 迭影计划</div><b style="font-size:18px">${esc(S.user.name)}</b></div><a class="btn btn-sm btn-gold" href="#/apply">报名新作品</a></div>
         <div class="pg-num">${tok(d.balance.available)}</div><div class="xs muted" style="margin-bottom:12px">可用标准Token（≈ ¥${Math.round((d.balance.available / 1e6) * 46).toLocaleString()} 刊例价值）</div>
         <div class="row"><a class="btn btn-sm" href="#/lightyear/wallet">算力账户与流水</a><a class="btn btn-sm" href="#/support/predict">算力测算</a><a class="btn btn-sm" href="#/workbench">创作工作台</a></div></div>
-      <div style="height:26px"></div>
+      <div id="me-resume" style="margin-top:14px"></div>
+      <div style="height:20px"></div>
       ${head('', '我的报名', '')}
       ${d.apps.map((a) => {
         const k = a.status === '未通过' ? -1 : FLOW.indexOf(a.status)
@@ -221,10 +239,11 @@
           ${a.roadshow_score != null ? `<p class="small muted" style="margin-top:10px">路演 ${a.roadshow_score} 分 · ${esc(a.roadshow_note || '')}</p>` : ''}
           ${a.status === '已审批' ? `<p class="small green" style="margin-top:6px">已获算力面值 ${wanYuan(a.grant_yuan)}，已到账算力账户。</p>` : ''}
           <div class="me-video"><i class="fa-solid fa-film"></i><span class="small">作品视频</span>${a.video_status ? statusTag(a.video_status) : '<span class="tag amber">未上传</span>'}${a.reviews ? `<span class="xs muted">专家评审 ${a.reviews} 份</span>` : ''}${a.video_reject ? `<span class="xs red">驳回：${esc(a.video_reject)}</span>` : ''}</div>
-          <div class="row" style="margin-top:12px"><button class="btn btn-sm btn-gold" data-up="${a.id}" data-t="${esc(a.title)}"><i class="fa-solid fa-cloud-arrow-up"></i>${a.video_status ? '更换视频' : '上传视频'}</button><a class="btn btn-sm" href="#/vote/${a.code}">作品页 / 邀请打分</a></div></div>`
+          <div class="me-acts"><button class="btn btn-sm btn-gold" data-up="${a.id}" data-t="${esc(a.title)}"><i class="fa-solid fa-cloud-arrow-up"></i>上传影片</button><a class="btn btn-sm" href="#/materials/${a.id}"><i class="fa-solid fa-folder-open"></i>申报材料</a><a class="btn btn-sm" href="#/promo/${a.id}"><i class="fa-solid fa-chart-line"></i>推广</a><a class="btn btn-sm" href="#/vote/${a.code}"><i class="fa-solid fa-share-nodes"></i>作品页</a></div></div>`
       }).join('') || `<div class="empty">还没有报名作品<div style="margin-top:12px"><a class="btn btn-gold btn-sm" href="#/apply">立即报名</a></div></div>`}
     </div>`
     $$('[data-up]').forEach((b) => (b.onclick = () => window.openVideoUpload({ id: +b.dataset.up, title: b.dataset.t }, () => router())))
+    window.checkPendingUploads && window.checkPendingUploads($('#me-resume'))
   }
 
   window.programAdminPage = (el, embed) => adminPage(el, embed)

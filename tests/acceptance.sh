@@ -160,4 +160,45 @@ check "UP04 运营可预览待审视频" $(get /media/$VID $OP) 200
 check "UP05 Range 分段播放 206" $(curl -s -o /dev/null -w '%{http_code}' -H 'Range: bytes=0-1023' -H "Authorization: Bearer $OP" "$B/media/$VID") 206
 check "UP06 作者通过 ?token 预览" $(curl -s -o /dev/null -w '%{http_code}' "$B/media/$VID?token=$C") 200
 
+# ---------------- v4：1亿元扶持 / 分片续传 / 申报材料 / 展映推广 ----------------
+check "V401 扶持总览 1 亿" $(get /promo/overview) 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));assert d["total"]==100000000 and d["compute"]==70000000 and d["promo"]==30000000 and sum(b["amount_yuan"] for b in d["promo_buckets"])==30000000 and sum(b["amount_yuan"] for b in d["compute_buckets"])==70000000;print("    ↳ 7000万算力 + 3000万宣发，资金池合计校验通过")'
+head -c 9437184 /dev/urandom > /tmp/mp9.bin
+SZ=$(stat -c %s /tmp/mp9.bin)
+check "V402 分片上传初始化" $(req POST /uploads/init $C "{\"app_id\":1,\"size\":$SZ,\"mime\":\"video/mp4\",\"file_name\":\"acc.mp4\",\"category\":\"样章\"}") 200
+UT=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["token"])')
+head -c 8388608 /tmp/mp9.bin > /tmp/p1.bin; tail -c +8388609 /tmp/mp9.bin > /tmp/p2.bin
+put(){ curl -s -o /tmp/r.json -w '%{http_code}' -X PUT "$B/uploads/$UT/part/$1" -H "Authorization: Bearer $2" -H 'Content-Type: application/octet-stream' --data-binary @$3; }
+check "V403 第 1 片上传" $(put 1 $C /tmp/p1.bin) 200
+check "V404 他人不可写入分片" $(put 2 $C2 /tmp/p2.bin) 404
+check "V405 缺片时不可合并" $(req POST /uploads/$UT/complete $C) 409
+check "V406 断点续传：再次 init 返回已完成分片" $(req POST /uploads/init $C "{\"app_id\":1,\"size\":$SZ,\"mime\":\"video/mp4\",\"file_name\":\"acc.mp4\",\"category\":\"样章\"}") 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));assert d["resumed"] and d["done"]==[1];print("    ↳ resumed，done=[1]")'
+check "V407 第 2 片上传" $(put 2 $C /tmp/p2.bin) 200
+check "V408 合并完成并入库" $(req POST /uploads/$UT/complete $C) 200
+check "V409 超过 4GB 拒绝" $(req POST /uploads/init $C '{"app_id":1,"size":5000000000,"mime":"video/mp4","file_name":"big.mp4"}') 413
+check "V410 非视频格式拒绝" $(req POST /uploads/init $C '{"app_id":1,"size":1000,"mime":"image/gif","file_name":"a.gif"}') 415
+check "V411 指南接口（首轮10/二轮9）" $(get /guide) 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));assert len(d["round1"])==10 and len(d["round2"])==9;print("    ↳ R1=10 R2=9")'
+check "V412 材料网盘链接缺访问说明被拒" $(req POST /program/apps/1/materials $C '{"item":"r1_chars","url":"https://pan.example.com/s/x1"}') 422
+check "V413 材料网盘链接提交" $(req POST /program/apps/1/materials $C '{"item":"r1_chars","url":"https://pan.example.com/s/x1","note":"提取码 a1b2，长期有效"}') 200
+MID=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["id"])')
+check "V414 他人不可查看材料" $(get /program/apps/1/materials $C2) 403
+check "V415 二轮材料未晋级不可提交" $(req POST /program/apps/4/materials $C2 '{"item":"r2_pitch","url":"https://pan.example.com/s/x2","note":"提取码 zz11"}') 409
+check "V416 运营需补件须写原因" $(req POST /admin/materials/$MID/decide $OP '{"action":"redo"}') 422
+check "V417 运营标记需补件" $(req POST /admin/materials/$MID/decide $OP '{"action":"redo","feedback":"请补充反派人物小传"}') 200
+check "V418 创作者不可审阅材料" $(req POST /admin/materials/$MID/decide $C '{"action":"confirm"}') 403
+check "V419 速览表填写完整即提交" $(req PUT /program/apps/1/sheet $C '{"genre":"悬疑","length":"28分钟","audience":"18-40","stage":"样章","leads":"林深","compute":"1.4亿Token","cash_gap":"12万","delivery":"2027-06"}') 200
+grep -q '"complete":true' /tmp/r.json && echo "    ↳ 速览表 complete"
+check "V420 展映厅公开" $(get /screening) 200
+check "V421 作品多视频（公开仅已上线）" $(get /program/apps/GY7K2Q/videos) 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));assert all(v["status"]=="已上线" for v in d["rows"]);print("    ↳ 公开视频",len(d["rows"]),"条")'
+check "V422 推广事件记录" $(req POST /promo/event "" '{"code":"GY7K2Q","type":"share","ref":"wechat","device":"dvacceptance01"}') 200
+check "V423 创作者推广数据" $(get /program/apps/1/promo $C) 200
+check "V424 他人不可看推广数据" $(get /program/apps/1/promo $C2) 403
+check "V425 宣发扶持发放" $(req POST /admin/apps/1/promo-grant $OP '{"bucket":"traffic","yuan":100000,"note":"平台推流"}') 200
+check "V426 宣发超额被拒" $(req POST /admin/apps/1/promo-grant $OP '{"bucket":"media","yuan":5000000}') 422
+check "V427 创作者不可发放宣发" $(req POST /admin/apps/1/promo-grant $C '{"bucket":"traffic","yuan":1000}') 403
+check "V428 运营编排展映单元/主推" $(req POST /admin/apps/2/screening $OP '{"unit":"lab","featured":true}') 200
+
 echo; echo "通过 $pass，失败 $fail"

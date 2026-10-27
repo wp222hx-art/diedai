@@ -33,7 +33,7 @@ function embedOf(url: string): { type: 'file' | 'iframe' | 'external'; src: stri
 function pub(v: any) {
   if (!v) return null
   const e = v.kind === 'upload' ? { type: 'file', src: `/api/media/${v.id}` } : embedOf(v.url)
-  return { id: v.id, app_id: v.app_id, kind: v.kind, title: v.title, status: v.status, duration: v.duration, size: v.size, plays: v.plays, finishes: v.finishes, reject_reason: v.reject_reason, created_at: v.created_at, player: e }
+  return { id: v.id, app_id: v.app_id, kind: v.kind, category: v.category || '正片', title: v.title, status: v.status, duration: v.duration, size: v.size, plays: v.plays, finishes: v.finishes, reject_reason: v.reject_reason, created_at: v.created_at, player: e }
 }
 async function canManage(db: D1Database, user: any, appId: number) {
   const a = await db.prepare('SELECT id,user_id,title FROM program_apps WHERE id=?').bind(appId).first<any>()
@@ -53,7 +53,7 @@ r.post('/program/apps/:id/video', async (c) => {
     const b = await c.req.json().catch(() => ({}))
     const url = String(b.url || '').trim()
     if (!LINK_OK.test(url)) return c.json({ error: '请填写 B站 / 优酷 / 腾讯视频 / 抖音 / Vimeo / YouTube 等平台链接，或 .mp4 直链（https）' }, 422)
-    row = { kind: 'link', url, title: b.title || null, duration: Number(b.duration) || null, size: null, mime: null, r2_key: null }
+    row = { kind: 'link', category: ['正片','预告','先导片A','先导片B','样章','花絮'].includes(b.category) ? b.category : '正片', url, title: b.title || null, duration: Number(b.duration) || null, size: null, mime: null, r2_key: null }
   } else {
     if (!c.env.VIDEOS) return c.json({ error: '当前环境未开通视频存储，请使用外链方式' }, 503)
     const len = Number(c.req.header('content-length') || 0)
@@ -64,11 +64,11 @@ r.post('/program/apps/:id/video', async (c) => {
     const obj = await c.env.VIDEOS.put(key, c.req.raw.body as any, { httpMetadata: { contentType: mime } })
     if (!obj) return c.json({ error: '上传失败' }, 500)
     if (obj.size > MAX_MB * 1024 * 1024) { await c.env.VIDEOS.delete(key); return c.json({ error: `单个视频不超过 ${MAX_MB}MB` }, 413) }
-    row = { kind: 'upload', r2_key: key, mime, size: obj.size, url: null, title: decodeURIComponent(c.req.header('x-file-name') || '') || null, duration: Number(c.req.header('x-duration')) || null }
+    row = { kind: 'upload', category: ['正片','预告','先导片A','先导片B','样章','花絮'].includes(decodeURIComponent(c.req.header('x-category') || '')) ? decodeURIComponent(c.req.header('x-category') || '') : '正片', r2_key: key, mime, size: obj.size, url: null, title: decodeURIComponent(c.req.header('x-file-name') || '') || null, duration: Number(c.req.header('x-duration')) || null }
   }
-  await db.prepare("UPDATE program_videos SET status='已替换' WHERE app_id=? AND status IN ('待审核','已上线','已驳回')").bind(appId).run()
-  const res = await db.prepare('INSERT INTO program_videos (app_id,user_id,kind,r2_key,url,mime,size,duration,title) VALUES (?,?,?,?,?,?,?,?,?)')
-    .bind(appId, g.user.id, row.kind, row.r2_key, row.url, row.mime, row.size, row.duration, row.title).run()
+  await db.prepare("UPDATE program_videos SET status='已替换' WHERE app_id=? AND COALESCE(category,'正片')=? AND status IN ('待审核','已上线','已驳回')").bind(appId, row.category).run()
+  const res = await db.prepare('INSERT INTO program_videos (app_id,user_id,kind,r2_key,url,mime,size,duration,title,category) VALUES (?,?,?,?,?,?,?,?,?,?)')
+    .bind(appId, g.user.id, row.kind, row.r2_key, row.url, row.mime, row.size, row.duration, row.title, row.category).run()
   await audit(db, g.user, 'video.submit', 'program_app:' + appId, row.kind)
   await emit(db, 'video.submitted', { app_id: appId, video_id: res.meta.last_row_id })
   return c.json({ id: res.meta.last_row_id, status: '待审核' })

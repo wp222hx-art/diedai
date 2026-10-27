@@ -1,4 +1,4 @@
-/* 迭影计划 · 5000万元 Seedance 影视算力共享 */
+/* 迭影计划 · 7000万元 Seedance 影视算力（1 亿元扶持之算力部分） */
 (function () {
   const R = window.ROUTES
   const tok = (n) => {
@@ -21,13 +21,13 @@
     return `<section class="pg-sec" id="lightyear-poster"><div class="wrap"><div class="pg-onesheet">
       <a class="pg-sheet" href="#/lightyear" aria-label="迭影计划">
         <div class="pg-sheet-top"><span>迭代盛典 × 捷成世纪</span><span>2026</span></div>
-        <div class="pg-sheet-mid"><div class="pg-label">迭影计划 · AI 影视算力扶持</div><div class="pg-num">5,000<small>万元</small></div><div class="pg-sheet-title">Seedance 生成算力 免费共享</div></div>
+        <div class="pg-sheet-mid"><div class="pg-label">迭影计划 · AI 影视算力扶持</div><div class="pg-num">7,000<small>万元</small></div><div class="pg-sheet-title">Seedance 生成算力 免费共享</div></div>
         <div class="pg-billing"><b>迭代影交汇</b> 联合 <b>捷成世纪</b> 发起 · 模型 <b>SEEDANCE 2.0 / 2.5</b><br>适用 入驻项目 · 入选项目 · 孵化签约项目 · 盛典获奖作品<br>额度以迭影测算核定 · 按里程碑释放 · 不可提现或转让</div>
       </a>
       <div class="pg-copy">
         <div class="pg-label">Programme Notice · 计划公告</div>
         <h2>为入驻与入选项目提供<br>免费的 AI 影视生成算力</h2>
-        <p>迭代影交汇联合捷成世纪，拟投入价值 <b class="gold">5,000 万元</b> 的 Seedance 2.0 / 2.5 视频生成算力。凡在平台建档的项目均可领取基础额度；入选、签约项目依据「迭影测算」核定定向额度，最高覆盖预测用量的 100%。按基准口径测算，总池约可支撑 <b style="color:var(--text)">${p.ref_projects.toLocaleString()} 部</b> 60 分钟 720p AI 剧集的生成用量。</p>
+        <p>迭代影交汇联合捷成世纪，拟投入价值 <b class="gold">7,000 万元</b> 的 Seedance 2.0 / 2.5 视频生成算力。凡在平台建档的项目均可领取基础额度；入选、签约项目依据「迭影测算」核定定向额度，最高覆盖预测用量的 100%。按基准口径测算，总池约可支撑 <b style="color:var(--text)">${p.ref_projects.toLocaleString()} 部</b> 60 分钟 720p AI 剧集的生成用量。</p>
         <table class="pg-table compact" style="margin:18px 0 6px"><tbody>${ov.tiers.map((t) => `<tr><td class="n">${TIER_NO[t.code]}</td><td class="t"><b>${t.name}</b></td><td class="c small muted">${esc(t.cond)}</td><td class="r small">${esc(t.give.split('，')[0].replace('体验礼包 · ', ''))}</td></tr>`).join('')}</tbody></table>
         <div class="between xs" style="margin-top:14px"><span class="muted">已发放</span><span class="mono">${tok(p.granted)} / ${tok(p.std)} 标准Token</span></div><div class="bar" style="margin-top:6px"><i style="width:${Math.max(pct, 1)}%"></i></div>
         <div class="row" style="margin-top:22px"><a class="btn btn-gold" href="#/lightyear">查看计划与申领</a><a class="btn" href="#/lightyear/predict">算力与周期预测</a></div>
@@ -44,7 +44,7 @@
     app.innerHTML = `
     <section class="pg-hero"><div class="wrap">
       <div class="pg-label">迭代盛典 × 捷成世纪 · Seedance 2.0 / 2.5</div>
-      <h1>迭影计划<br><span>5,000 万元</span> AI 影视算力扶持</h1>
+      <h1>迭影计划<br><span>7,000 万元</span> AI 算力扶持</h1>
       <p class="lead">面向平台全部有项目的创作者与团队：建档即可领取基础额度，入选与签约项目按可解释的预测模型核定定向额度，随制作里程碑分批释放。</p>
       <div class="row"><a class="btn btn-gold" href="${S.user ? '#/lightyear/wallet' : '#/login?mode=register&next=' + encodeURIComponent('#/lightyear/wallet')}">${S.user ? '我的算力账户' : '入驻并申领'}</a><a class="btn" href="#/lightyear/predict">算力与周期预测</a></div>
     </div></section>

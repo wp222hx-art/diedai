@@ -6,6 +6,7 @@ import workRoutes from './routes/work'
 import lightyearRoutes from './routes/lightyear'
 import programRoutes from './routes/program'
 import videoRoutes from './routes/video'
+import mediaRoutes from './routes/media'
 
 const app = new Hono<Env>()
 
@@ -15,12 +16,13 @@ app.onError((err, c) => {
   console.error(err)
   return c.json({ error: '服务异常，请稍后重试', detail: String(err?.message || err) }, 500)
 })
-app.get('/api/health', (c) => c.json({ ok: true, service: '迭代影交汇', version: '1.2.0' }))
+app.get('/api/health', (c) => c.json({ ok: true, service: '迭代影交汇', version: '4.0.0' }))
 app.route('/api', publicRoutes)
 app.route('/api', workRoutes)
 app.route('/api', lightyearRoutes)
 app.route('/api', programRoutes)
 app.route('/api', videoRoutes)
+app.route('/api', mediaRoutes)
 app.all('/api/*', (c) => c.json({ error: '接口不存在' }, 404))
 
 const shell = `<!DOCTYPE html>
@@ -31,9 +33,9 @@ const shell = `<!DOCTYPE html>
 <meta name="theme-color" content="#f5f7fa">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="description" content="迭影计划｜迭代 × 捷成世纪 —— 5000万元 AI 影视算力扶持，面向 AI 专业电影团队与影视院校毕业生">
+<meta name="description" content="迭影计划｜迭代 × 捷成世纪 —— 1 亿元 AI 影视扶持（7000 万算力 + 3000 万宣发），面向 AI 专业电影团队与影视院校毕业生">
 <title>迭影计划 · 迭代 × 捷成世纪 AI 影视扶持</title>
-<meta property="og:title" content="迭影计划 · 5,000 万元 AI 影视算力扶持">
+<meta property="og:title" content="迭影计划 · 1 亿元 AI 影视算力 + 宣发扶持">
 <meta property="og:description" content="每一次迭代，离银幕更近一帧。迭代 × 捷成世纪，为 AI 专业电影团队与影视院校毕业生提供免费算力、完片孵化与发行支持。">
 <meta property="og:image" content="/static/img/program-poster.jpg">
 <meta property="og:type" content="website">
@@ -67,6 +69,9 @@ const shell = `<!DOCTYPE html>
 <script src="/static/jinding.js"></script>
 <script src="/static/admin.js"></script>
 <script src="/static/apply.js"></script>
+<script src="/static/uploader.js"></script>
+<script src="/static/screening.js"></script>
+<script src="/static/materials.js"></script>
 </body>
 </html>`
 

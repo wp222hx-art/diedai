@@ -219,6 +219,8 @@
   const TABS = [
     ['overview', '概览', 'fa-gauge-high'],
     ['videos', '视频审核', 'fa-film'],
+    ['materials', '申报材料', 'fa-folder-open'],
+    ['screening', '展映与宣发', 'fa-tv'],
     ['selection', '评选总表', 'fa-ranking-star'],
     ['roadshow', '路演与审批', 'fa-stamp'],
     ['compute', '算力资金池', 'fa-coins'],
@@ -275,7 +277,7 @@
           ${playerHTML(v)}
           <div class="adm-v-body"><div class="between"><b>${esc(v.app_title)}</b>${vTag(v.status)}</div>
             <div class="xs muted">${esc(v.team)} · 上传人 ${esc(v.uploader)} · ${esc(String(v.created_at).slice(0, 16))}</div>
-            <div class="xs dim">${v.kind === 'upload' ? '站内上传' : '外链'}${v.duration ? ' · ' + fmtT(v.duration) : ''}${v.size ? ' · ' + fmtMB(v.size) : ''}${v.status === '已上线' ? ` · 播放 ${v.plays} / 完播 ${v.finishes}` : ''}</div>
+            <div class="xs dim"><b>${esc(v.category || '正片')}</b> · ${v.kind === 'upload' ? '站内上传' : '外链'}${v.duration ? ' · ' + fmtT(v.duration) : ''}${v.size ? ' · ' + fmtMB(v.size) : ''}${v.status === '已上线' ? ` · 播放 ${v.plays} / 完播 ${v.finishes}` : ''}</div>
             ${v.reject_reason ? `<div class="xs red">驳回原因：${esc(v.reject_reason)}</div>` : ''}
             ${v.status === '待审核' ? `<div class="row" style="margin-top:10px"><button class="btn btn-sm btn-gold" data-ok="${v.id}"><i class="fa-solid fa-check"></i>通过上线</button><button class="btn btn-sm" data-no="${v.id}"><i class="fa-solid fa-xmark"></i>驳回</button><a class="btn btn-sm btn-ghost" href="#/vote/${v.code}">作品页</a></div>` : `<div class="row" style="margin-top:10px"><a class="btn btn-sm btn-ghost" href="#/vote/${v.code}">作品页</a></div>`}
           </div></article>`).join('') || `<div class="empty"><i class="fa-regular fa-circle-check"></i>「${st}」暂无视频</div>`}</div>`
@@ -314,13 +316,15 @@
       }
     },
 
+    async materials(el, q) { return window.admMaterials(el, q) },
+    async screening(el) { return window.admScreening(el) },
     async roadshow(el) {
       if (window.programAdminPage) return window.programAdminPage(el, true)
       el.innerHTML = '<div class="empty">模块加载失败</div>'
     },
 
     async compute(el) {
-      el.innerHTML = admHead('算力资金池', '5,000 万元算力面值 · 分桶管理 · 额度审批') + `<div id="adm-ly"></div>`
+      el.innerHTML = admHead('算力资金池', '7,000 万元算力面值（总扶持 1 亿元，另 3,000 万宣发见「展映与宣发」）· 分桶管理 · 额度审批') + `<div id="adm-ly"></div>`
       if (window.lightyearAdminPage) return window.lightyearAdminPage($('#adm-ly'), true)
       $('#adm-ly').innerHTML = `<a class="btn" href="#/lightyear/wallet">进入资金池</a>`
     },
