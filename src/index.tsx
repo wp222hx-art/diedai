@@ -7,6 +7,7 @@ import lightyearRoutes from './routes/lightyear'
 import programRoutes from './routes/program'
 import videoRoutes from './routes/video'
 import mediaRoutes from './routes/media'
+import exportRoutes from './routes/export'
 
 const app = new Hono<Env>()
 
@@ -23,6 +24,7 @@ app.route('/api', lightyearRoutes)
 app.route('/api', programRoutes)
 app.route('/api', videoRoutes)
 app.route('/api', mediaRoutes)
+app.route('/api', exportRoutes)
 app.all('/api/*', (c) => c.json({ error: '接口不存在' }, 404))
 
 const shell = `<!DOCTYPE html>
@@ -72,6 +74,7 @@ const shell = `<!DOCTYPE html>
 <script src="/static/uploader.js"></script>
 <script src="/static/screening.js"></script>
 <script src="/static/materials.js"></script>
+<script src="/static/export.js"></script>
 </body>
 </html>`
 

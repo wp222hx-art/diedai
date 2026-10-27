@@ -201,4 +201,51 @@ check "V426 宣发超额被拒" $(req POST /admin/apps/1/promo-grant $OP '{"buck
 check "V427 创作者不可发放宣发" $(req POST /admin/apps/1/promo-grant $C '{"bucket":"traffic","yuan":1000}') 403
 check "V428 运营编排展映单元/主推" $(req POST /admin/apps/2/screening $OP '{"unit":"lab","featured":true}') 200
 
+# ---------------- v4.1 出海与交易 ----------------
+ORG=$(login org@demo.cn)
+act(){ req POST /export/deals/$1/act $2 "$3"; }
+check "EX01 出海总览（8 模式 / 9 阶段）" $(get /export/overview) 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));assert len(d["modes"])==8 and len(d["stages"])==9;print("    ↳ modes=8 stages=9")'
+check "EX02 创作者不能询价" $(req POST /export/deals $C '{"title_id":1,"mode":"license","territories":["日韩"]}') 403
+check "EX03 未开放模式被拒" $(req POST /export/deals $ORG '{"title_id":1,"mode":"buyout","territories":["日韩"]}') 422
+check "EX04 超出可售地区被拒" $(req POST /export/deals $ORG '{"title_id":1,"mode":"license","territories":["拉美"]}') 422
+check "EX05 终止旧询价（未签约买方可终止）" $(act 2 $ORG '{"action":"terminate","reason":"改变采购计划"}') 200
+check "EX06 机构发起独家询价" $(req POST /export/deals $ORG '{"title_id":1,"mode":"mg","territories":["东南亚"],"media":"短剧 App","exclusive":true}') 200
+XD=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["id"])')
+check "EX07 第三方不可查看交易室" $(get /export/deals/$XD $C2) 403
+check "EX08 买方不能同意看片" $(act $XD $ORG '{"action":"allow_screen"}') 403
+check "EX09 卖方同意看片" $(act $XD $C '{"action":"allow_screen"}') 200
+check "EX10 保底+分成缺保底被拒" $(act $XD $ORG '{"action":"offer","share_pct":40}') 422
+check "EX11 买方报价" $(act $XD $ORG '{"action":"offer","mg":50000,"share_pct":40}') 200
+check "EX12 不能接受自己的报价" $(act $XD $ORG '{"action":"accept"}') 403
+check "EX13 卖方还价" $(act $XD $C '{"action":"counter","mg":70000,"share_pct":50}') 200
+check "EX14 买方接受 → 条款" $(act $XD $ORG '{"action":"accept"}') 200
+check "EX15 独家地区/媒介冲突阻断签约" $(act $XD $ORG '{"action":"sign","contract_text":"东南亚 短剧App 独家 24个月 保底7万 分成50%"}') 409
+check "EX16 非约束交易终止" $(act $XD $ORG '{"action":"terminate","reason":"权利冲突，改谈日韩"}') 200
+check "EX17 新询价（日韩非独家授权）" $(req POST /export/deals $ORG '{"title_id":1,"mode":"license","territories":["日韩"],"media":"流媒体 SVOD"}') 200
+XD=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["id"])')
+act $XD $C '{"action":"allow_screen"}' >/dev/null; act $XD $ORG '{"action":"offer","amount":200000}' >/dev/null
+check "EX18 卖方接受" $(act $XD $C '{"action":"accept"}') 200
+check "EX19 签约生效（合同校验值+权利占用）" $(act $XD $C '{"action":"sign","contract_text":"日韩 SVOD 非独家 24 个月 授权费 20 万元"}') 200
+check "EX20 已签约卖方不可单方终止" $(act $XD $C '{"action":"terminate","reason":"想反悔了"}') 403
+check "EX21 发行窗口超出签约地区被拒" $(req POST /export/deals/$XD/releases $ORG '{"region":"北美","channel":"x","window_start":"2027-01-01","window_end":"2028-01-01"}') 422
+check "EX22 规划发行窗口" $(req POST /export/deals/$XD/releases $ORG '{"region":"日韩","channel":"日本 SVOD","window_start":"2027-03-01","window_end":"2029-02-28"}') 200
+check "EX23 交付清单不足 4 项被拒" $(act $XD $C '{"action":"deliver","items":["海报与剧照"]}') 422
+check "EX24 提交交付" $(act $XD $C '{"action":"deliver","items":["母版（ProRes / H.264 高码率）","多语种字幕（SRT）","元数据（简介 / 分级 / 演职员）","权利链与授权文件"]}') 200
+check "EX25 上线缺证据被拒" $(act $XD $ORG '{"action":"golive","content_id":"JP-1"}') 422
+check "EX26 验收上线" $(act $XD $ORG '{"action":"golive","content_id":"JP-SVOD-7781","evidence":"https://example.com/jp/7781"}') 200
+check "EX27 回款无银行凭证被拒" $(act $XD $F '{"action":"receipt","amount":100000}') 422
+check "EX28 财务登记回款" $(act $XD $F '{"action":"receipt","bank_ref":"BK-JP-01","amount":200000}') 200
+check "EX29 非运营不可结项" $(act $XD $C '{"action":"close"}') 403
+check "EX30 运营结项" $(act $XD $OP '{"action":"close"}') 200
+check "EX31 到手测算（保底+分成）" $(req POST /export/calc "" '{"mode":"mg","mg":80000,"share_pct":50,"gross":300000}') 200
+python3 -c 'import json;d=json.load(open("/tmp/r.json"));assert d["creator"]==150000;print("    ↳ 80000 + (300000×50% − 80000) = 150000")'
+check "EX32 上架缺权利确认被拒" $(req POST /export/titles $C '{"app_id":5,"modes":["license"],"territories":["北美"]}') 422
+check "EX33 出海上架提交审核" $(req POST /export/titles $C '{"app_id":5,"modes":["license","revshare"],"territories":["北美","欧洲"],"rights_confirm":true}') 200
+XT=$(python3 -c 'import json;print(json.load(open("/tmp/r.json"))["id"])')
+check "EX34 未审核片单不公开" $(get /export/titles/$XT) 404
+check "EX35 创作者不能审核片单" $(req POST /admin/export/titles/$XT/decide $C '{"action":"approve"}') 403
+check "EX36 运营上架" $(req POST /admin/export/titles/$XT/decide $OP '{"action":"approve"}') 200
+check "EX37 上架后公开" $(get /export/titles/$XT) 200
+
 echo; echo "通过 $pass，失败 $fail"

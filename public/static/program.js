@@ -194,24 +194,7 @@
     }
   }
 
-  // ================= 出海与交易 =================
-  R.export = async (app) => {
-    const d = await api('/program/overview')
-    const e = d.export
-    app.innerHTML = `<section class="pg-hero sm"><div class="wrap"><div class="pg-label">发行支持 · 国内与海外</div><h1 style="font-size:clamp(28px,4.4vw,44px)">出海与版权交易</h1>
-      <p class="lead" style="margin:8px 0 0">入选作品完片后进入统一发行通道：国内平台、海外短剧与视频平台、国际电影节市场，版权可按地区、媒介、期限拆分交易。</p></div></section>
-    <div class="wrap section" style="padding-top:26px">
-      <div class="pg-figs">${e.data.map((x) => `<div><b>${x.k}</b><span>${esc(x.v)}</span><a class="xs dim" style="display:block;margin-top:6px" href="${esc(x.url)}" target="_blank" rel="noopener">来源：${esc(x.src)}</a></div>`).join('')}<div><b>3 步</b><span>挂牌 → 授权锁定 → 实收分账</span></div></div>
-      <div style="height:40px"></div>
-      <div class="cards c2" style="gap:40px">
-        <div>${head('01', '出海服务', '')}<table class="pg-table"><tbody>${e.services.map(([a, b], i) => `<tr><td class="n">${String(i + 1).padStart(2, '0')}</td><td class="t"><b>${a}</b></td><td class="c">${b}</td></tr>`).join('')}</tbody></table></div>
-        <div>${head('02', '渠道矩阵', '渠道为对接方向，具体合作以签约为准。')}<table class="pg-table compact"><thead><tr><th>渠道</th><th>地区</th><th style="text-align:right">模式</th></tr></thead><tbody>${e.channels.map(([a, b, c]) => `<tr><td class="c small" style="color:var(--text)">${a}</td><td class="c xs muted">${b}</td><td class="r xs">${c}</td></tr>`).join('')}</tbody></table></div>
-      </div>
-      <div style="height:30px"></div>
-      ${head('03', '版权交易', '成片或开发中项目可在迭代影市挂牌，机构经 NDA 查看资料；签约即锁定权利范围，杜绝一权多售。')}
-      <div class="pg-links"><a href="#/market"><b>迭代影市</b><span class="small muted">剧本 / IP、联合开发、成片许可挂牌与询价</span><i class="fa-solid fa-arrow-right"></i></a><a href="#/distribution"><b>发行中心</b><span class="small muted">窗口日历、母版交付、上线证据、报表对账与分账</span><i class="fa-solid fa-arrow-right"></i></a></div>
-    </div>`
-  }
+  // ================= 出海与交易：已迁移至 export.js =================
 
   // ================= 报名 =================
   // R.apply 已迁移至 apply.js（移动端分步报名）

@@ -221,6 +221,7 @@
     ['videos', '视频审核', 'fa-film'],
     ['materials', '申报材料', 'fa-folder-open'],
     ['screening', '展映与宣发', 'fa-tv'],
+    ['export', '出海交易', 'fa-earth-asia'],
     ['selection', '评选总表', 'fa-ranking-star'],
     ['roadshow', '路演与审批', 'fa-stamp'],
     ['compute', '算力资金池', 'fa-coins'],
@@ -318,6 +319,7 @@
 
     async materials(el, q) { return window.admMaterials(el, q) },
     async screening(el) { return window.admScreening(el) },
+    async export(el) { return window.admExport(el) },
     async roadshow(el) {
       if (window.programAdminPage) return window.programAdminPage(el, true)
       el.innerHTML = '<div class="empty">模块加载失败</div>'
